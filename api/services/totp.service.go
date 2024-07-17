@@ -91,10 +91,8 @@ func (t *TotpService) Active(code *dto.TotpCodeVerify) (string, error) {
 	return "Двухфакторная аутентификация активирована", nil
 }
 
-func (t *TotpService) codeValidate(passcode string, utf8string string) bool {
-	//secret := base32.StdEncoding.EncodeToString([]byte(utf8string))
-	t.logger.Warnf("VALID -------- %s %s\n", utf8string, passcode)
-	valid := totp.Validate(passcode, utf8string)
+func (t *TotpService) codeValidate(passcode string, secret string) bool {
+	valid := totp.Validate(passcode, secret)
 	return valid
 }
 

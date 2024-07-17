@@ -57,4 +57,5 @@ type MemberUpdate struct {
 type MemberAuth struct {
 	Email    string `json:"email,omitempty"  example:"user@comecord.com" bson:"email"`
 	Password string `json:"password,omitempty" example:"calista78Batista" bson:"password"`
+	Code     string `json:"code" example:"123456" bson:"code"`
 }

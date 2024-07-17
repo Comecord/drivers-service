@@ -24,6 +24,7 @@ type MemberService struct {
 	logger       logging.Logger
 	tokenService *TokenService
 	config       *config.Config
+	totp         *TotpService
 }
 
 func NewMemberService(db *mongo.Database, cfg *config.Config, ctx context.Context, collectionName string) MemberInterface {
@@ -111,6 +112,13 @@ func (m *MemberService) Login(req *dto.MemberAuth) (*dto.TokenDetail, error) {
 	err = bcrypt.CompareHashAndPassword([]byte(member.Password), []byte(req.Password))
 	if err != nil {
 		return nil, err
+	}
+
+	if member.IsTotp == true {
+		isVerify := m.totp.codeValidate(req.Code, member.SecretQrCode)
+		if !isVerify {
+			return nil, &service_errors.ServiceError{EndUserMessage: service_errors.TotpNotValid}
+		}
 	}
 
 	tdto := tokenDto{Id: member.ID, MobileNumber: member.Phone, Email: member.Email}
