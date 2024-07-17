@@ -11,8 +11,8 @@ import (
 )
 
 type TokenService struct {
-	logger logging.Logger
-	cfg    *config.Config
+	Logger logging.Logger
+	Cfg    *config.Config
 }
 
 type tokenDto struct {
@@ -25,15 +25,15 @@ type tokenDto struct {
 func NewTokenService(cfg *config.Config) TokenInterface {
 	logger := logging.NewLogger(cfg)
 	return &TokenService{
-		logger: logger,
-		cfg:    cfg,
+		Logger: logger,
+		Cfg:    cfg,
 	}
 }
 
 func (s *TokenService) GenerateToken(token *tokenDto) (*dto.TokenDetail, error) {
 	td := &dto.TokenDetail{}
-	td.AccessTokenExpireTime = time.Now().Add(s.cfg.Jwt.AccessTokenExpireDuration * time.Minute).Unix()
-	td.RefreshTokenExpireTime = time.Now().Add(s.cfg.Jwt.RefreshTokenExpireDuration * time.Minute).Unix()
+	td.AccessTokenExpireTime = time.Now().Add(s.Cfg.Jwt.AccessTokenExpireDuration * time.Minute).Unix()
+	td.RefreshTokenExpireTime = time.Now().Add(s.Cfg.Jwt.RefreshTokenExpireDuration * time.Minute).Unix()
 
 	act := jwt.MapClaims{}
 
@@ -46,7 +46,7 @@ func (s *TokenService) GenerateToken(token *tokenDto) (*dto.TokenDetail, error) 
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, act)
 
 	var err error
-	td.AccessToken, err = at.SignedString([]byte(s.cfg.Jwt.Secret))
+	td.AccessToken, err = at.SignedString([]byte(s.Cfg.Jwt.Secret))
 
 	if err != nil {
 		return nil, err
@@ -59,7 +59,7 @@ func (s *TokenService) GenerateToken(token *tokenDto) (*dto.TokenDetail, error) 
 
 	rt := jwt.NewWithClaims(jwt.SigningMethodHS256, rtc)
 
-	td.RefreshToken, err = rt.SignedString([]byte(s.cfg.Jwt.RefreshSecret))
+	td.RefreshToken, err = rt.SignedString([]byte(s.Cfg.Jwt.RefreshSecret))
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +73,7 @@ func (s *TokenService) VerifyToken(token string) (*jwt.Token, error) {
 		if !ok {
 			return nil, &service_errors.ServiceError{EndUserMessage: service_errors.UnExpectedError}
 		}
-		return []byte(s.cfg.Jwt.Secret), nil
+		return []byte(s.Cfg.Jwt.Secret), nil
 	})
 	if err != nil {
 		return nil, err

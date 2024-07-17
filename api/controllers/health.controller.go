@@ -14,6 +14,7 @@ func NewHealthHandler() *HealthHandler {
 }
 
 // HandlerGet godoc
+//
 //	@Summary		Health Check
 //	@Description	Health Check
 //	@Tags			Health Check

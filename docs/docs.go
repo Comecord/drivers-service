@@ -134,6 +134,95 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/members/totp/active/{code}": {
+            "get": {
+                "security": [
+                    {
+                        "AuthBearer": []
+                    }
+                ],
+                "description": "Active TOTP authentication for member",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Active TOTP authentication",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Code",
+                        "name": "code",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/components.BaseHttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/components.BaseHttpResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/components.BaseHttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/members/totp/generate": {
+            "post": {
+                "description": "Generate TOTP authentication for member",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Generate TOTP",
+                "parameters": [
+                    {
+                        "description": "payload",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.TotpRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/components.BaseHttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/components.BaseHttpResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/components.BaseHttpResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/roles/create": {
             "post": {
                 "description": "Создание роли",
@@ -425,6 +514,19 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "dto.TotpRequest": {
+            "type": "object",
+            "properties": {
+                "accountName": {
+                    "type": "string",
+                    "example": "user@comecord.com"
+                },
+                "issuer": {
+                    "type": "string",
+                    "example": "comecord.com"
                 }
             }
         },

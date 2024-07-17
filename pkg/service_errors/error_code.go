@@ -4,25 +4,26 @@ const (
 	// Token
 	UnExpectedError = "Expected error"
 	ClaimsNotFound  = "Claims not found"
-	TokenRequired   = "token required"
-	TokenBearer     = "Bearer not found in token header"
-	TokenExpired    = "token expired"
-	TokenInvalid    = "token invalid"
+	TokenRequired   = "Требуеться токен для авторизации в системе"
+	TokenBearer     = "Требуеться токен для авторизации в системе"
+	TokenExpired    = "Токен устарел"
+	TokenInvalid    = "Токен недействителен"
+
 	// OTP
 	OtpExists   = "Otp exists"
 	OtpUsed     = "Otp used"
 	OtpNotValid = "Otp invalid"
 
 	// User
-	EmailExists       = "Email already exists"
-	EmailNotExists    = "Member not exists"
-	UsernameExists    = "Username exists"
-	UsernameNotExists = "Username not exists"
-	PermissionDenied  = "Permission denied"
+	EmailExists       = "Указанный email уже зарегистрирован в системе"
+	EmailNotExists    = "Email не зарегистрирован в системе"
+	UsernameExists    = "Пользователь с таким именем уже зарегистрирован в системе"
+	UsernameNotExists = "Пользователь с таким именем не зарегистрирован в системе"
+	PermissionDenied  = "У вас нет прав для этого действия"
 
 	// DB
-	RecordNotFound = "record not found"
+	RecordNotFound = "Запись не найдена"
 
 	// Role
-	RoleExists = "Role with such name already exists"
+	RoleExists = "Роль с таким названием уже существует"
 )

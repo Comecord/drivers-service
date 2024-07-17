@@ -26,6 +26,7 @@ const (
 	Find            SubCategory = "Find"
 	Save            SubCategory = "Save"
 	Insert          SubCategory = "Insert"
+	Read            SubCategory = "Read"
 	Update          SubCategory = "Update"
 	Delete          SubCategory = "Delete"
 	CreateIndex     SubCategory = "CreateIndex"

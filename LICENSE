@@ -1,3 +1,5 @@
+Copyright (c) 2024 Comecord Team Development
+
 
                                  Apache License
                            Version 2.0, January 2004
@@ -177,7 +179,10 @@
    END OF TERMS AND CONDITIONS
 
 
-   Copyright 2024 Alexander Shumilin < icehuntmen@gmail.com > aka Alexander Hunter
+   Copyright 2024
+   * Comecord Team Development
+   * Alexander Shumilin < icehuntmen@gmail.com > aka Alexander Hunter
+   * Roman Shumilin < colddevelop@gmail.com > aka
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.

@@ -14,6 +14,7 @@ type Config struct {
 	Server   struct {
 		IPort   int    `yaml:"internalPort"`
 		EPort   int    `yaml:"externalPort"`
+		Domain  string `yaml:"domain"`
 		RunMode string `yaml:"runMode"`
 	}
 	SMTP struct {

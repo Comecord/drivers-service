@@ -33,7 +33,7 @@ func NewMemberController(db *mongo.Database, ctx context.Context, conf *config.C
 //	@Tags			Members
 //	@Accept			json
 //	@produces		json
-//	@Param			Request	body		dto.MemberRegistration			true	"member"
+//	@Param			Request	body		dto.MemberRegistration		true	"member"
 //	@Success		201		{object}	components.BaseHttpResponse	"Success"
 //	@Failure		400		{object}	components.BaseHttpResponse	"Failed"
 //	@Failure		409		{object}	components.BaseHttpResponse	"Failed"

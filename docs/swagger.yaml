@@ -112,6 +112,15 @@ definitions:
           type: string
         type: array
     type: object
+  dto.TotpRequest:
+    properties:
+      accountName:
+        example: user@comecord.com
+        type: string
+      issuer:
+        example: comecord.com
+        type: string
+    type: object
   validations.ValidationError:
     properties:
       message:
@@ -207,6 +216,63 @@ paths:
       summary: Registration a member
       tags:
       - Members
+  /api/v1/members/totp/active/{code}:
+    get:
+      consumes:
+      - application/json
+      description: Active TOTP authentication for member
+      parameters:
+      - description: Code
+        in: path
+        name: code
+        required: true
+        type: string
+      responses:
+        "201":
+          description: Success
+          schema:
+            $ref: '#/definitions/components.BaseHttpResponse'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/components.BaseHttpResponse'
+        "409":
+          description: Failed
+          schema:
+            $ref: '#/definitions/components.BaseHttpResponse'
+      security:
+      - AuthBearer: []
+      summary: Active TOTP authentication
+      tags:
+      - Auth
+  /api/v1/members/totp/generate:
+    post:
+      consumes:
+      - application/json
+      description: Generate TOTP authentication for member
+      parameters:
+      - description: payload
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TotpRequest'
+      responses:
+        "201":
+          description: Success
+          schema:
+            $ref: '#/definitions/components.BaseHttpResponse'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/components.BaseHttpResponse'
+        "409":
+          description: Failed
+          schema:
+            $ref: '#/definitions/components.BaseHttpResponse'
+      summary: Generate TOTP
+      tags:
+      - Auth
   /api/v1/roles/create:
     post:
       consumes:

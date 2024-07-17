@@ -33,8 +33,8 @@ func NewMemberService(db *mongo.Database, cfg *config.Config, ctx context.Contex
 		ctx:        ctx,
 		logger:     logging.NewLogger(cfg),
 		tokenService: &TokenService{
-			logger: logging.NewLogger(cfg),
-			cfg:    cfg,
+			Logger: logging.NewLogger(cfg),
+			Cfg:    cfg,
 		},
 		config: cfg,
 	}
