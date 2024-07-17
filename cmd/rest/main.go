@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"crm-glonass/api"
+	"crm-glonass/api/client"
 	"crm-glonass/config"
 	"crm-glonass/data/cache"
 	mongox "crm-glonass/data/mongox"
@@ -27,10 +28,13 @@ func main() {
 	// Logger info
 	logger.Info(logging.General, logging.StartUp, "Started server...", map[logging.ExtraKey]interface{}{"Version": conf.Version})
 
+	// Websocket client connection
+	client.ConnectWebsocket()
+	logger.Infof("Connecting to websocket server")
+
 	// Database connection
 	database, _ := mongox.Connection(conf, ctx, logger)
 	cache.InitRedis(conf, ctx)
 	logger.Infof("Listening on Swagger http://localhost:%d/swagger/index.html", conf.Server.IPort)
 	api.InitialServer(conf, database, logger)
-
 }

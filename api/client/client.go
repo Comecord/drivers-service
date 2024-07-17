@@ -12,7 +12,7 @@ import (
 
 var addr = flag.String("addr", "localhost:5900", "http service address")
 
-func ClientConnect() {
+func ConnectWebsocket() {
 	flag.Parse()
 	log.SetFlags(0)
 
