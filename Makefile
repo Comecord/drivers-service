@@ -21,8 +21,8 @@ build: $(BINARY)
 
 # Build binary
 $(BINARY): $(SRC_DIRS)
-	## mkdir -p $(BIN_DIR)
-	## $(GO) build -o $(BINARY) ./src/cmd/main.go
+	 mkdir -p $(BIN_DIR)
+	 $(GO) build -o $(BINARY)  ./src/cmd/main.go
 
 sw:
 	swag init -g cmd/main.go --parseDependency --parseInternal
@@ -41,7 +41,7 @@ clean:
 
 
 deploy:
-	docker-compose up -d --build
+	docker-compose -f deploy/docker-compose.yml up -d --build
 
 down:
-	docker-compose down
+	docker-compose -f deploy/docker-compose.yml down
