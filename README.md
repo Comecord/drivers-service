@@ -49,6 +49,29 @@ go install github.com/air-verse/air@latest
 Documentation in OpenAPI can be viewed at this link after launching the project local
 http://localhost:5100/swagger/index.html
 
+# Development
+
+Project can be used as a [Pre-Commit](https://pre-commit.com/)To maintain a patch version with each commit, checks will be added in the future.
+
+[ Mac Os ]
+
+Before committing code, this repo has been setup to check Go files using pre-commit git hooks. 
+To leverage pre-commit, developers must install pre-commit and associated tools locally (only MacOS):
+```bash
+brew install pre-commit golangci-lint go-critic
+```
+Verify install went successfully with:
+```bash
+pre-commit --version
+```
+Once you verify pre-commit is installed locally, you can use pre-commit git hooks by installing them in this repo:
+```bash
+pre-commit install
+```
+
+[ Windows ]
+Смотрите установку 
+
 ## Swagger Init
 <details>
 <summary> Install and Update Swagger data</summary>
