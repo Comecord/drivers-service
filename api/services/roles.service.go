@@ -2,11 +2,11 @@ package services
 
 import (
 	"context"
-	"crm-glonass/api/dto"
-	"crm-glonass/config"
-	"crm-glonass/pkg/logging"
-	"crm-glonass/pkg/service_errors"
-	"crm-glonass/pkg/tools"
+	"drivers-service/api/dto"
+	"drivers-service/config"
+	"drivers-service/pkg/logging"
+	"drivers-service/pkg/service_errors"
+	"drivers-service/pkg/tools"
 	"errors"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"

@@ -1,6 +1,6 @@
 package components
 
-import "crm-glonass/api/validations"
+import "drivers-service/api/validations"
 
 type BaseHttpResponse struct {
 	Result           any                            `json:"result"`

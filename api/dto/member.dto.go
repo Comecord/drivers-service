@@ -1,21 +1,22 @@
 package dto
 
 import (
-	"crm-glonass/data/models"
+	"drivers-service/data/models"
 	"time"
 )
 
 type MemberResponse struct {
-	Email      string                `json:"email,omitempty"`
-	FirstName  string                `json:"firstName,omitempty"`
-	LastName   string                `json:"lastName,omitempty"`
-	MiddleName string                `json:"middleName,omitempty"`
-	Birthday   time.Time             `json:"birthday,omitempty"`
-	Phone      string                `json:"phone,omitempty"`
-	Location   models.MemberLocation `json:"location,omitempty"`
-	Role       []models.MemberRole   `json:"role,omitempty"`
-	CreateAt   time.Time             `json:"createdAt,omitempty" bson:"createdAt,omitempty"`
-	UpdatedAt  time.Time             `json:"updatedAt,omitempty" bson:"updatedAt,omitempty"`
+	Email        string                `json:"email,omitempty"`
+	FirstName    string                `json:"firstName,omitempty"`
+	LastName     string                `json:"lastName,omitempty"`
+	MiddleName   string                `json:"middleName,omitempty"`
+	Birthday     time.Time             `json:"birthday,omitempty"`
+	Phone        string                `json:"phone,omitempty"`
+	Location     models.MemberLocation `json:"location,omitempty"`
+	Role         []models.MemberRole   `json:"role,omitempty"`
+	Verification string                `json:"-"`
+	CreateAt     time.Time             `json:"createdAt,omitempty" bson:"createdAt,omitempty"`
+	UpdatedAt    time.Time             `json:"updatedAt,omitempty" bson:"updatedAt,omitempty"`
 }
 
 type MemberRegistration struct {
@@ -30,6 +31,7 @@ type MemberRegistration struct {
 	Location     models.MemberLocation `json:"-" default:"{}"`
 	Role         []models.MemberRole   `json:"-" default:"[]"`
 	Verified     bool                  `json:"-"`
+	Verification string                `json:"-"`
 	Status       string                `json:"-" default:"wait" bson:"status,omitempty"`
 	IsTotp       bool                  `json:"-" default:"false" bson:"isTotp,omitempty"`
 	FileQRCode   string                `json:"-"`
@@ -49,7 +51,6 @@ type MemberUpdate struct {
 	Phone      string                `json:"phone,omitempty"`
 	Location   models.MemberLocation `json:"location,omitempty"`
 	Role       models.MemberRole     `json:"-"`
-	Verified   bool                  `json:"-"`
 	CreatedAt  string                `json:"-"`
 	UpdatedAt  string                `json:"-"`
 }
@@ -57,4 +58,5 @@ type MemberUpdate struct {
 type MemberAuth struct {
 	Email    string `json:"email,omitempty"  example:"user@comecord.com" bson:"email"`
 	Password string `json:"password,omitempty" example:"calista78Batista" bson:"password"`
+	Code     string `json:"code" example:"123456" bson:"code"`
 }

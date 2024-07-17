@@ -16,6 +16,8 @@ definitions:
     enum:
     - 0
     - 40001
+    - 40002
+    - 40003
     - 40101
     - 40301
     - 40401
@@ -27,6 +29,8 @@ definitions:
     x-enum-varnames:
     - Success
     - ValidationError
+    - TokenValidationError
+    - TotpValidationError
     - AuthError
     - ForbiddenError
     - NotFoundError
@@ -68,6 +72,9 @@ definitions:
     type: object
   dto.MemberAuth:
     properties:
+      code:
+        example: "123456"
+        type: string
       email:
         example: user@comecord.com
         type: string

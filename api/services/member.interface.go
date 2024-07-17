@@ -1,6 +1,6 @@
 package services
 
-import "crm-glonass/api/dto"
+import "drivers-service/api/dto"
 
 type MemberInterface interface {
 	Register(createDTO *dto.MemberRegistration) error

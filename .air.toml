@@ -4,8 +4,8 @@ tmp_dir = "tmp"
 
 [build]
   args_bin = []
-  bin = "tmp\\crm-server.exe"
-  cmd = "swag init -g api/api.go && go build -o ./tmp/crm-server.exe ./cmd/rest/main.go"
+  bin = "tmp\\drivers-server.exe"
+  cmd = "swag init -g api/api.go &&  go build -o ./tmp/drivers-server.exe ./cmd/rest/main.go"
   delay = 1000
   exclude_dir = ["assets","docs", "tmp", "vendor", "testdata"]
   exclude_file = []

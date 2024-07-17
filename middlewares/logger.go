@@ -2,8 +2,8 @@ package middlewares
 
 import (
 	"bytes"
-	"crm-glonass/config"
-	"crm-glonass/pkg/logging"
+	"drivers-service/config"
+	"drivers-service/pkg/logging"
 	"github.com/gin-gonic/gin"
 	"io"
 	"strings"

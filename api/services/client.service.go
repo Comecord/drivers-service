@@ -1,6 +1,6 @@
 package services
 
-import "crm-glonass/api/dto"
+import "drivers-service/api/dto"
 
 type Client struct {
 	ID    string

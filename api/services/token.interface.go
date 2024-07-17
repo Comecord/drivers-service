@@ -1,7 +1,7 @@
 package services
 
 import (
-	"crm-glonass/api/dto"
+	"drivers-service/api/dto"
 	"github.com/golang-jwt/jwt"
 )
 

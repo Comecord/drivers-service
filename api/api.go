@@ -1,13 +1,13 @@
 package api
 
 import (
-	routers "crm-glonass/api/routes"
-	"crm-glonass/api/validations"
-	"crm-glonass/config"
-	"crm-glonass/docs"
-	_ "crm-glonass/docs"
-	"crm-glonass/middlewares"
-	"crm-glonass/pkg/logging"
+	routers "drivers-service/api/routes"
+	"drivers-service/api/validations"
+	"drivers-service/config"
+	"drivers-service/docs"
+	_ "drivers-service/docs"
+	"drivers-service/middlewares"
+	"drivers-service/pkg/logging"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"

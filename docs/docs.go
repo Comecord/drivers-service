@@ -381,6 +381,8 @@ const docTemplate = `{
             "enum": [
                 0,
                 40001,
+                40002,
+                40003,
                 40101,
                 40301,
                 40401,
@@ -392,6 +394,8 @@ const docTemplate = `{
             "x-enum-varnames": [
                 "Success",
                 "ValidationError",
+                "TokenValidationError",
+                "TotpValidationError",
                 "AuthError",
                 "ForbiddenError",
                 "NotFoundError",
@@ -453,6 +457,10 @@ const docTemplate = `{
         "dto.MemberAuth": {
             "type": "object",
             "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "123456"
+                },
                 "email": {
                     "type": "string",
                     "example": "user@comecord.com"

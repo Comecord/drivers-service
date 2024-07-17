@@ -370,6 +370,8 @@
             "enum": [
                 0,
                 40001,
+                40002,
+                40003,
                 40101,
                 40301,
                 40401,
@@ -381,6 +383,8 @@
             "x-enum-varnames": [
                 "Success",
                 "ValidationError",
+                "TokenValidationError",
+                "TotpValidationError",
                 "AuthError",
                 "ForbiddenError",
                 "NotFoundError",
@@ -442,6 +446,10 @@
         "dto.MemberAuth": {
             "type": "object",
             "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "123456"
+                },
                 "email": {
                     "type": "string",
                     "example": "user@comecord.com"

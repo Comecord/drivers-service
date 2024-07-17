@@ -9,6 +9,7 @@ const (
 	TokenExpired    = "Токен устарел"
 	TokenInvalid    = "Токен недействителен"
 
+	TotpNotValid = "Код двухфакторной проверки неверен"
 	// OTP
 	OtpExists   = "Otp exists"
 	OtpUsed     = "Otp used"

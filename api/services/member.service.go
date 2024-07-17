@@ -2,12 +2,12 @@ package services
 
 import (
 	"context"
-	"crm-glonass/api/dto"
-	"crm-glonass/config"
-	"crm-glonass/data/models"
-	"crm-glonass/pkg/logging"
-	"crm-glonass/pkg/service_errors"
-	"crm-glonass/pkg/tools"
+	"drivers-service/api/dto"
+	"drivers-service/config"
+	"drivers-service/data/models"
+	"drivers-service/pkg/logging"
+	"drivers-service/pkg/service_errors"
+	"drivers-service/pkg/tools"
 	"errors"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
@@ -24,19 +24,20 @@ type MemberService struct {
 	logger       logging.Logger
 	tokenService *TokenService
 	config       *config.Config
+	totp         *TotpService
+	mailService  *EmailService
 }
 
 func NewMemberService(db *mongo.Database, cfg *config.Config, ctx context.Context, collectionName string) MemberInterface {
 	return &MemberService{
-		Mongo:      db,
-		Collection: db.Collection(collectionName),
-		ctx:        ctx,
-		logger:     logging.NewLogger(cfg),
-		tokenService: &TokenService{
-			Logger: logging.NewLogger(cfg),
-			Cfg:    cfg,
-		},
-		config: cfg,
+		Mongo:        db,
+		Collection:   db.Collection(collectionName),
+		ctx:          ctx,
+		logger:       logging.NewLogger(cfg),
+		config:       cfg,
+		mailService:  NewEmailService(cfg),
+		totp:         NewTotpService(db, cfg, ctx),
+		tokenService: NewTokenService(cfg),
 	}
 }
 
@@ -46,6 +47,7 @@ func (m *MemberService) Register(memberCreate *dto.MemberRegistration) error {
 	memberCreate.CreateAt = time.Now()
 	memberCreate.UpdatedAt = memberCreate.CreateAt
 	memberCreate.Birthday = memberCreate.CreateAt
+	memberCreate.Verification = tools.GenerateUUID()
 
 	rolesCollection := m.Mongo.Collection("roles")
 
@@ -73,7 +75,21 @@ func (m *MemberService) Register(memberCreate *dto.MemberRegistration) error {
 
 	memberCreate.Password = string(bp)
 
-	m.logger.Infof("memberCreate: %v", memberCreate)
+	if m.config.SMTP.Auth {
+		code := memberCreate.Verification
+		firstName := memberCreate.FirstName
+		emailData := models.EmailData{
+			URL:       m.config.Server.Domain + "/verifyemail/" + code,
+			FirstName: firstName,
+			Subject:   "Your account verification code",
+		}
+
+		err = m.mailService.SendEmail(memberCreate.Email, &emailData, "verificationCode.html")
+		if err != nil {
+			m.logger.Error(logging.Email, logging.SendEmail, err.Error(), nil)
+			return err
+		}
+	}
 
 	res, err := m.Collection.InsertOne(m.ctx, memberCreate)
 	if err != nil {
@@ -111,6 +127,13 @@ func (m *MemberService) Login(req *dto.MemberAuth) (*dto.TokenDetail, error) {
 	err = bcrypt.CompareHashAndPassword([]byte(member.Password), []byte(req.Password))
 	if err != nil {
 		return nil, err
+	}
+
+	if member.IsTotp == true {
+		isVerify := m.totp.codeValidate(req.Code, member.SecretQrCode)
+		if !isVerify {
+			return nil, &service_errors.ServiceError{EndUserMessage: service_errors.TotpNotValid}
+		}
 	}
 
 	tdto := tokenDto{Id: member.ID, MobileNumber: member.Phone, Email: member.Email}

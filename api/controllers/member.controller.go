@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"context"
-	"crm-glonass/api/components"
-	"crm-glonass/api/dto"
-	"crm-glonass/api/services"
-	"crm-glonass/config"
+	"drivers-service/api/components"
+	"drivers-service/api/dto"
+	"drivers-service/api/services"
+	"drivers-service/config"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -80,8 +80,7 @@ func (mc *MemberController) Login(ctx *gin.Context) {
 	fmt.Println(req)
 	token, err := mc.service.Login(req)
 	if err != nil {
-		ctx.AbortWithStatusJSON(components.TranslateErrorToStatusCode(err),
-			components.GenerateBaseResponseWithError(nil, false, components.InternalError, err))
+		ctx.AbortWithStatusJSON(components.TranslateErrorToStatusCode(err), components.GenerateBaseResponseWithError(nil, false, components.ValidationError, err))
 		return
 	}
 

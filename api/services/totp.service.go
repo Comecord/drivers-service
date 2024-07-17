@@ -3,11 +3,11 @@ package services
 import (
 	"bytes"
 	"context"
-	"crm-glonass/api/dto"
-	"crm-glonass/config"
-	"crm-glonass/data/models"
-	"crm-glonass/pkg/logging"
 	"crypto/sha256"
+	"drivers-service/api/dto"
+	"drivers-service/config"
+	"drivers-service/data/models"
+	"drivers-service/pkg/logging"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -27,7 +27,7 @@ type TotpService struct {
 	config *config.Config
 }
 
-func NewTotpService(db *mongo.Database, cfg *config.Config, ctx context.Context) TotpInterface {
+func NewTotpService(db *mongo.Database, cfg *config.Config, ctx context.Context) *TotpService {
 	return &TotpService{
 		Mongo:  db,
 		ctx:    ctx,
@@ -91,10 +91,8 @@ func (t *TotpService) Active(code *dto.TotpCodeVerify) (string, error) {
 	return "Двухфакторная аутентификация активирована", nil
 }
 
-func (t *TotpService) codeValidate(passcode string, utf8string string) bool {
-	//secret := base32.StdEncoding.EncodeToString([]byte(utf8string))
-	t.logger.Warnf("VALID -------- %s %s\n", utf8string, passcode)
-	valid := totp.Validate(passcode, utf8string)
+func (t *TotpService) codeValidate(passcode string, secret string) bool {
+	valid := totp.Validate(passcode, secret)
 	return valid
 }
 

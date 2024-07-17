@@ -2,8 +2,8 @@ package routers
 
 import (
 	"context"
-	"crm-glonass/api/controllers"
-	"crm-glonass/config"
+	"drivers-service/api/controllers"
+	"drivers-service/config"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 )
