@@ -6,6 +6,7 @@ import (
 	"crm-glonass/config"
 	"crm-glonass/data/cache"
 	mongox "crm-glonass/data/mongox"
+	"crm-glonass/data/seeds"
 	"os"
 
 	"crm-glonass/pkg/logging"
@@ -29,7 +30,13 @@ func main() {
 
 	// Database connection
 	database, _ := mongox.Connection(conf, ctx, logger)
-	cache.InitRedis(conf, ctx)
+
+	seeds.SeedRoles(database, ctx)
+
+	err := cache.InitRedis(conf, ctx)
+	if err != nil {
+		logger.Error(logging.Redis, logging.Connection, err.Error(), map[logging.ExtraKey]interface{}{"Version": conf.Version})
+	}
 	logger.Infof("Listening on Swagger http://localhost:%d/swagger/index.html", conf.Server.IPort)
 	api.InitialServer(conf, database, logger)
 

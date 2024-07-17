@@ -26,6 +26,7 @@ const (
 	Find            SubCategory = "Find"
 	Save            SubCategory = "Save"
 	Insert          SubCategory = "Insert"
+	Seed            SubCategory = "Seeding"
 	Read            SubCategory = "Read"
 	Update          SubCategory = "Update"
 	Delete          SubCategory = "Delete"
