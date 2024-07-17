@@ -8,6 +8,9 @@ import (
 	"crm-glonass/data/cache"
 	mongox "crm-glonass/data/mongox"
 	"os"
+	"os/signal"
+	"sync"
+	"syscall"
 
 	"crm-glonass/pkg/logging"
 )
@@ -28,13 +31,33 @@ func main() {
 	// Logger info
 	logger.Info(logging.General, logging.StartUp, "Started server...", map[logging.ExtraKey]interface{}{"Version": conf.Version})
 
+	var wg sync.WaitGroup
+
 	// Websocket client connection
-	client.ConnectWebsocket()
-	logger.Infof("Connecting to websocket server")
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		client.ConnectWebsocket()
+		logger.Infof("WebSocket client connected")
+	}()
 
 	// Database connection
-	database, _ := mongox.Connection(conf, ctx, logger)
-	cache.InitRedis(conf, ctx)
-	logger.Infof("Listening on Swagger http://localhost:%d/swagger/index.html", conf.Server.IPort)
-	api.InitialServer(conf, database, logger)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		database, _ := mongox.Connection(conf, ctx, logger)
+		cache.InitRedis(conf, ctx)
+		logger.Infof("Database connected")
+		api.InitialServer(conf, database, logger)
+	}()
+
+	// Handle graceful shutdown
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	logger.Infof("Shutting down server...")
+
+	// Wait for all goroutines to finish
+	wg.Wait()
 }
