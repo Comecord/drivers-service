@@ -22,54 +22,60 @@ func ConnectWebsocket() {
 	u := url.URL{Scheme: "ws", Host: *addr, Path: "/"}
 	log.Printf("Connecting to %s", u.String())
 
-	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
-	if err != nil {
-		log.Fatal("Dial:", err)
-	}
-	defer c.Close()
-
-	done := make(chan struct{})
-
-	go func() {
-		defer close(done)
-		for {
-			_, message, err := c.ReadMessage()
-			if err != nil {
-				log.Println("read:", err)
-				return
-			}
-			log.Printf("recv: %s", message)
-		}
-	}()
-
-	ticker := time.NewTicker(time.Second)
-	defer ticker.Stop()
-
+	// Пытаемся подключиться к WebSocket серверу
 	for {
-		select {
-		case <-done:
-			return
-		case t := <-ticker.C:
-			err := c.WriteMessage(websocket.TextMessage, []byte(t.String()))
-			if err != nil {
-				log.Println("write:", err)
-				return
-			}
-		case <-interrupt:
-			log.Println("interrupt")
+		c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
+		if err != nil {
+			log.Printf("Не удалось подключиться к WebSocket серверу: %v\n", err)
+			time.Sleep(5 * time.Second)
+			continue
+		}
 
-			// Cleanly close the connection by sending a close message and then
-			// waiting (with timeout) for the server to close the connection.
-			err := c.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
-			if err != nil {
-				log.Println("write close:", err)
-				return
+		done := make(chan struct{})
+
+		go func() {
+			defer close(done)
+			for {
+				_, message, err := c.ReadMessage()
+				if err != nil {
+					log.Println("read:", err)
+					return
+				}
+				log.Printf("recv: %s", message)
 			}
+		}()
+
+		// Периодически отправляем сообщение на сервер
+		timer := time.NewTimer(10 * time.Second) // Измените период по необходимости
+
+		for {
 			select {
 			case <-done:
-			case <-time.After(time.Second):
+				return
+			case <-timer.C:
+				err := c.WriteMessage(websocket.TextMessage, []byte("ping"))
+				if err != nil {
+					log.Println("write:", err)
+					c.Close()
+					break
+				}
+				timer.Reset(10 * time.Second) // Сброс таймера для следующего периода
+			case <-interrupt:
+				log.Println("interrupt")
+
+				// Cleanly close the connection by sending a close message and then
+				// waiting (with timeout) for the server to close the connection.
+				err := c.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+				if err != nil {
+					log.Println("write close:", err)
+					return
+				}
+				select {
+				case <-done:
+				case <-time.After(time.Second):
+				}
+				return
 			}
-			return
 		}
 	}
 }
