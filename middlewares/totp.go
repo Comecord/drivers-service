@@ -2,8 +2,8 @@ package middlewares
 
 import (
 	"bytes"
-	"crm-glonass/data/models"
 	"crypto/sha256"
+	"drivers-service/data/models"
 	"encoding/base32"
 	"encoding/hex"
 	"fmt"

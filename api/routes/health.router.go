@@ -1,7 +1,7 @@
 package routers
 
 import (
-	handlers "crm-glonass/api/controllers"
+	handlers "drivers-service/api/controllers"
 	"github.com/gin-gonic/gin"
 )
 

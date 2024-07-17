@@ -28,6 +28,7 @@ sw:
 	swag init -g cmd/main.go --parseDependency --parseInternal
 
 run:
+	set APP_ENV=dev
 	air -c .airm.toml
 
 # Run tests

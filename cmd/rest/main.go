@@ -2,14 +2,14 @@ package main
 
 import (
 	"context"
-	"crm-glonass/api"
-	"crm-glonass/config"
-	"crm-glonass/data/cache"
-	mongox "crm-glonass/data/mongox"
-	"crm-glonass/data/seeds"
+	"drivers-service/api"
+	"drivers-service/config"
+	"drivers-service/data/cache"
+	mongox "drivers-service/data/mongox"
+	"drivers-service/data/seeds"
 	"os"
 
-	"crm-glonass/pkg/logging"
+	"drivers-service/pkg/logging"
 )
 
 var logger = logging.NewLogger(config.GetConfig())
@@ -37,7 +37,8 @@ func main() {
 	if err != nil {
 		logger.Error(logging.Redis, logging.Connection, err.Error(), map[logging.ExtraKey]interface{}{"Version": conf.Version})
 	}
-	logger.Infof("Listening on Swagger http://localhost:%d/swagger/index.html", conf.Server.IPort)
+	logger.Infof("http://localhost:%d/swagger/index.html", conf.Server.IPort)
+	logger.Infof("ENV: %v\n", os.Getenv("APP_ENV"))
 	api.InitialServer(conf, database, logger)
 
 }

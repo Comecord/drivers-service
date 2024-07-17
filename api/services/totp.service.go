@@ -3,11 +3,11 @@ package services
 import (
 	"bytes"
 	"context"
-	"crm-glonass/api/dto"
-	"crm-glonass/config"
-	"crm-glonass/data/models"
-	"crm-glonass/pkg/logging"
 	"crypto/sha256"
+	"drivers-service/api/dto"
+	"drivers-service/config"
+	"drivers-service/data/models"
+	"drivers-service/pkg/logging"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -27,7 +27,7 @@ type TotpService struct {
 	config *config.Config
 }
 
-func NewTotpService(db *mongo.Database, cfg *config.Config, ctx context.Context) TotpInterface {
+func NewTotpService(db *mongo.Database, cfg *config.Config, ctx context.Context) *TotpService {
 	return &TotpService{
 		Mongo:  db,
 		ctx:    ctx,

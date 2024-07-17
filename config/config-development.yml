@@ -5,12 +5,13 @@ server:
   internalPort: 5100
   externalPort: 5100
   runMode: debug
+smtp:
   emailFrom: tester@comecord.com
   smtpHost: smtp.comecord.com
   smtpPort: 587
   smtpUser: icehuntmen@gmail.com
   smtpPass: <PASSWORD>
-  smtpAuth: true
+  smtpAuth: false
   smtpSecure: true
 logger:
   filePath: ./logs/

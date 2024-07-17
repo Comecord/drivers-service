@@ -1,7 +1,7 @@
 package logging
 
 import (
-	"crm-glonass/config"
+	"drivers-service/config"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/mattn/go-colorable"

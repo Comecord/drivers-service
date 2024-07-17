@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"context"
-	"crm-glonass/api/components"
-	"crm-glonass/api/dto"
-	"crm-glonass/api/services"
-	"crm-glonass/config"
+	"drivers-service/api/components"
+	"drivers-service/api/dto"
+	"drivers-service/api/services"
+	"drivers-service/config"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"

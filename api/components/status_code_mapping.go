@@ -1,7 +1,7 @@
 package components
 
 import (
-	"crm-glonass/pkg/service_errors"
+	"drivers-service/pkg/service_errors"
 	"net/http"
 )
 

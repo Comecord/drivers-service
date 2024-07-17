@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"crm-glonass/api/components"
+	"drivers-service/api/components"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )

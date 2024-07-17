@@ -21,10 +21,10 @@ type Config struct {
 		EmailFrom string `yaml:"emailFrom"`
 		Host      string `yaml:"smtpHost"`
 		Pass      string `yaml:"smtpPass"`
-		Port      string `yaml:"smtpPort"`
+		Port      int    `yaml:"smtpPort"`
 		User      string `yaml:"smtpUser"`
-		Auth      string `yaml:"smtpAuth"`
-		Security  string `yaml:"smtpSecurity"`
+		Auth      bool   `yaml:"smtpAuth"`
+		Security  bool   `yaml:"smtpSecure"`
 	}
 	Logger struct {
 		FilePath string `yaml:"filePath"`
@@ -81,6 +81,7 @@ type Config struct {
 
 func GetConfig() *Config {
 	cfgPath := getConfigPath(os.Getenv("APP_ENV"))
+	log.Printf("ENV: %v\n", os.Getenv("APP_ENV"))
 	b, err := LoadConfig(cfgPath, "yml")
 	if err != nil {
 		log.Fatalf("Error in load config %v", err)
@@ -121,6 +122,9 @@ var Version string
 func getConfigPath(env string) string {
 	if env == "docker" {
 		return "/app/config/config-docker"
+	}
+	if env == "dev" {
+		return "config/config-dev"
 	} else if env == "production" {
 		return "config/config-production"
 	} else {

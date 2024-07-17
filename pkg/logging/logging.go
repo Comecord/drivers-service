@@ -1,7 +1,7 @@
 package logging
 
 import (
-	"crm-glonass/config"
+	"drivers-service/config"
 )
 
 type Logger interface {

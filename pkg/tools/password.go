@@ -1,7 +1,8 @@
 package tools
 
 import (
-	"crm-glonass/config"
+	"drivers-service/config"
+	"encoding/base64"
 	"fmt"
 	"math/rand"
 	"strings"
@@ -15,6 +16,20 @@ var (
 	numberSet      = "0123456789"
 	allCharSet     = lowerCharSet + upperCharSet + specialCharSet + numberSet
 )
+
+func Encode(s string) string {
+	data := base64.StdEncoding.EncodeToString([]byte(s))
+	return string(data)
+}
+
+func Decode(s string) (string, error) {
+	data, err := base64.StdEncoding.DecodeString(s)
+	if err != nil {
+		return "", err
+	}
+
+	return string(data), nil
+}
 
 func CheckPassword(password string) bool {
 	cfg := config.GetConfig()

@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"crm-glonass/api/components"
+	"drivers-service/api/components"
 	"github.com/didip/tollbooth"
 	"github.com/gin-gonic/gin"
 	"net/http"

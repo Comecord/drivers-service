@@ -1,8 +1,8 @@
 package main
 
 import (
-	"crm-glonass/config"
-	"crm-glonass/pkg/logging"
+	"drivers-service/config"
+	"drivers-service/pkg/logging"
 )
 
 func main() {

@@ -2,12 +2,11 @@ package controllers
 
 import (
 	"context"
-	"crm-glonass/api/components"
-	"crm-glonass/api/dto"
-	"crm-glonass/api/services"
-	"crm-glonass/config"
-	"crm-glonass/constants"
-	"crm-glonass/pkg/logging"
+	"drivers-service/api/components"
+	"drivers-service/api/dto"
+	"drivers-service/api/services"
+	"drivers-service/config"
+	"drivers-service/constants"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -21,16 +20,10 @@ type TotpController struct {
 }
 
 func NewTotpController(db *mongo.Database, ctx context.Context, conf *config.Config) *TotpController {
-	service, ok := services.NewTotpService(db, conf, ctx).(*services.TotpService)
-	if !ok {
-		return nil
-	}
+
 	return &TotpController{
-		service: service,
-		token: &services.TokenService{
-			Logger: logging.NewLogger(conf),
-			Cfg:    conf,
-		},
+		service: services.NewTotpService(db, conf, ctx),
+		token:   services.NewTokenService(conf),
 	}
 }
 

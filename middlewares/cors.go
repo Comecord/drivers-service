@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"crm-glonass/config"
+	"drivers-service/config"
 	"github.com/gin-gonic/gin"
 )
 
