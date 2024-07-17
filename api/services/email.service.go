@@ -45,12 +45,13 @@ func (e *EmailService) SendEmail(email string, data *models.EmailData, templateN
 		e.logger.Fatalf("Could not parse template", err)
 	}
 
-	fmt.Printf("template: %v", template)
-
 	template = template.Lookup(templateName)
-	template.Execute(&body, &data)
+	err = template.Execute(&body, &data)
+	if err != nil {
+		return err
+	}
 
-	fmt.Printf("body: %v", body)
+	fmt.Printf("body: %v\n", body.String())
 	e.message.SetHeader("From", e.from)
 	e.message.SetHeader("To", email)
 	e.message.SetHeader("Subject", data.Subject)

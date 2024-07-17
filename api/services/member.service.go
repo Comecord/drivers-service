@@ -79,7 +79,7 @@ func (m *MemberService) Register(memberCreate *dto.MemberRegistration) error {
 		code := memberCreate.Verification
 		firstName := memberCreate.FirstName
 		emailData := models.EmailData{
-			URL:       m.config.Server.Domain + "/verifyemail/" + code,
+			URL:       fmt.Sprintf("http://%s:%d/api/v1/member/verifyemail/%s", m.config.Server.Domain, m.config.Server.IPort, code),
 			FirstName: firstName,
 			Subject:   "Your account verification code",
 		}
