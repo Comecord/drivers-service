@@ -46,7 +46,7 @@ func ConnectWebsocket() {
 		}()
 
 		// Периодически отправляем сообщение на сервер
-		timer := time.NewTimer(10 * time.Second) // Измените период по необходимости
+		timer := time.NewTimer(10 * time.Second)
 
 		for {
 			select {
