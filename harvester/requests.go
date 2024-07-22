@@ -1,15 +1,12 @@
-package main
+package harvester
 
 import (
 	"bytes"
-	"crm-glonass/collector"
 	"crm-glonass/config"
 	"crm-glonass/pkg/logging"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 )
 
@@ -22,7 +19,7 @@ type Post struct {
 
 var logger = logging.NewLogger(config.GetConfig())
 
-func login() {
+func Login() {
 	posturl := "https://hosting.glonasssoft.ru/api/v3/auth/login"
 
 	body := []byte(`{
@@ -65,11 +62,6 @@ func login() {
 	logger.Debugf("Auth: %s, UserId: %s, Username: %s", post.AuthId, post.UserId, post.User)
 }
 
-func main() {
-	var addr = flag.String("addr", "localhost:5900", "http service address")
-	flag.Parse()
-	log.SetFlags(0)
-	http.HandleFunc("/", collector.ServerStart)
-	fmt.Println("Сервер запущен!")
-	log.Fatal(http.ListenAndServe(*addr, nil))
+func PostRequest(data any, url string) {
+
 }

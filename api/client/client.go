@@ -1,81 +1,71 @@
 package client
 
 import (
-	"flag"
+	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
-	"net/url"
-	"os"
-	"os/signal"
+	"net/http"
 	"time"
 )
 
-var addr = flag.String("addr", "localhost:5900", "http service address")
+type Message struct {
+	UserID string `json:"userID"`
+	Type   string `json:"type"`
+}
 
-func ConnectWebsocket() {
-	flag.Parse()
-	log.SetFlags(0)
+func ConnectSocket() {
+	url := "ws://localhost:8000/ws"
 
-	interrupt := make(chan os.Signal, 1)
-	signal.Notify(interrupt, os.Interrupt)
+	header := http.Header{}
+	header.Add("Authorization", "Bearer your_auth_token") // Здесь добавьте ваш авторизационный токен
 
-	u := url.URL{Scheme: "ws", Host: *addr, Path: "/"}
-	log.Printf("Connecting to %s", u.String())
-
-	// Пытаемся подключиться к WebSocket серверу
-	for {
-		c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
-		if err != nil {
-			log.Printf("Не удалось подключиться к WebSocket серверу: %v\n", err)
-			time.Sleep(5 * time.Second)
-			continue
-		}
-
-		done := make(chan struct{})
-
-		go func() {
-			defer close(done)
-			for {
-				_, message, err := c.ReadMessage()
-				if err != nil {
-					log.Println("read:", err)
-					return
-				}
-				log.Printf("recv: %s", message)
-			}
-		}()
-
-		// Периодически отправляем сообщение на сервер
-		timer := time.NewTimer(10 * time.Second)
-
-		for {
-			select {
-			case <-done:
-				return
-			case <-timer.C:
-				err := c.WriteMessage(websocket.TextMessage, []byte("ping"))
-				if err != nil {
-					log.Println("write:", err)
-					c.Close()
-					break
-				}
-				timer.Reset(10 * time.Second) // Сброс таймера для следующего периода
-			case <-interrupt:
-				log.Println("interrupt")
-
-				// Cleanly close the connection by sending a close message and then
-				// waiting (with timeout) for the server to close the connection.
-				err := c.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
-				if err != nil {
-					log.Println("write close:", err)
-					return
-				}
-				select {
-				case <-done:
-				case <-time.After(time.Second):
-				}
-				return
-			}
-		}
+	conn, _, err := websocket.DefaultDialer.Dial(url, header)
+	if err != nil {
+		log.Fatal("Error connecting to server:", err)
 	}
+	defer conn.Close()
+
+	fmt.Println("Connected to server:", url)
+
+	// Отправка сообщения "messageData"
+	msg := Message{
+		UserID: "29318209382",
+		Type:   "vehicles",
+	}
+	err = conn.WriteJSON(msg)
+	if err != nil {
+		log.Println("Error sending JSON:", err)
+		return
+	}
+
+	// Ожидание ответа от сервера
+	go func() {
+		for {
+			response := make(map[string]string)
+			err = conn.ReadJSON(&response)
+			if err != nil {
+				log.Println("Error reading JSON:", err)
+				break
+			}
+			if response["status"] == "success" {
+				fmt.Printf("[responseData] %s\n", response["message"])
+			} else {
+				fmt.Printf("[errorsMessage] %s\n", response["message"])
+			}
+		}
+	}()
+
+	// Отправка сообщения "userJoin"
+	joinMsg := Message{
+		UserID: "29318209382",
+		Type:   "join",
+	}
+	err = conn.WriteJSON(joinMsg)
+	if err != nil {
+		log.Println("Error sending JSON:", err)
+		return
+	}
+
+	// Задержка для ожидания ответов от сервера
+	time.Sleep(5 * time.Second)
 }

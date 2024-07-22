@@ -38,8 +38,8 @@ func main() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		client.ConnectWebsocket()
-		logger.Infof("WebSocket client connected")
+		client.ConnectSocket()
+		logger.Infof("Socket client connected")
 	}()
 
 	// Database connection

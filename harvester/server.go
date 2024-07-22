@@ -1,4 +1,4 @@
-package collector
+package harvester
 
 import (
 	"github.com/gorilla/websocket"
@@ -23,6 +23,7 @@ func ServerStart(w http.ResponseWriter, r *http.Request) {
 		}
 		log.Printf("Recv: %s", message)
 		err = c.WriteMessage(mt, message)
+		log.Printf("Write:%d - %s", mt, message)
 		if err != nil {
 			log.Println("Write:", err)
 			break
