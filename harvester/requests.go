@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-type Post struct {
+type AuthPost struct {
 	AuthId        string `json:"AuthId"`
 	UserId        string `json:"UserId"`
 	User          string `json:"User"`
@@ -19,7 +19,7 @@ type Post struct {
 
 var logger = logging.NewLogger(config.GetConfig())
 
-func Login() {
+func Login() *AuthPost {
 	posturl := "https://hosting.glonasssoft.ru/api/v3/auth/login"
 
 	body := []byte(`{
@@ -53,15 +53,12 @@ func Login() {
 
 	fmt.Println("Response Body:", string(bodyBytes))
 
-	post := &Post{}
+	post := &AuthPost{}
 	err = json.Unmarshal(bodyBytes, post)
 	if err != nil {
 		panic(err)
 	}
 
 	logger.Debugf("Auth: %s, UserId: %s, Username: %s", post.AuthId, post.UserId, post.User)
-}
-
-func PostRequest(data any, url string) {
-
+	return post
 }

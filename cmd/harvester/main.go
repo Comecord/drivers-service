@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crm-glonass/harvester"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"net/http"
@@ -22,6 +23,12 @@ func UserJoinService(msg Message) map[string]string {
 	return map[string]string{"status": "success", "message": "User joined", "userID": msg.UserID}
 }
 
+func LoginService(msg Message) map[string]string {
+	data := harvester.Login()
+	authData := fmt.Sprintf("AuthId: %v, UserId: %v", data.AuthId, data.UserId)
+	return map[string]string{"status": "success", "message": authData, "userID": msg.UserID}
+}
+
 // Структура для маршрутов сервера
 type ServerRoutes map[string]func(Message) map[string]string
 
@@ -30,6 +37,12 @@ var upgrader = websocket.Upgrader{
 		return true // Разрешить все источники для простоты
 	},
 }
+
+type Client struct {
+	Conn *websocket.Conn
+}
+
+var clients = make(map[*Client]bool)
 
 func main() {
 	http.HandleFunc("/ws", handleConnections)
@@ -54,12 +67,22 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close()
 
+	token := r.Header.Get("token")
+	if token == "" {
+		fmt.Println("Токен отсутствует, отключение клиента...")
+		http.Error(w, "Forbidden", http.StatusForbidden) // Отправляем ответ и закрываем соединение
+		return
+	}
+	client := &Client{Conn: conn}
+	clients[client] = true
+
 	fmt.Println("Client connected:", conn.RemoteAddr())
 
 	// Определение маршрутов
 	routes := ServerRoutes{
 		"vehicles": VehicleService,
 		"join":     UserJoinService,
+		"login":    LoginService,
 	}
 
 	for {
