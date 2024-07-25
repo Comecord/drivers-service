@@ -6,54 +6,26 @@ import (
 	"crm-glonass/data/mongox"
 	"crm-glonass/harvester"
 	"crm-glonass/pkg/logging"
+	"errors"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"net/http"
-	"sync"
 )
-
-type Message struct {
-	UserID string `json:"userID"`
-	Type   string `json:"type"`
-}
 
 var (
-	conf    = config.GetConfig()
-	logger  = logging.NewLogger(config.GetConfig())
-	clients = make(map[*Client]bool) // Порог блокировки
+	conf   = config.GetConfig()
+	logger = logging.NewLogger(config.GetConfig())
 )
-var mu sync.RWMutex
-
-// Функция для обработки сообщений "vehicles"
-func VehicleService(msg Message) map[string]string {
-	// Обработка логики для "vehicles"
-	return map[string]string{"status": "success", "message": "Vehicle data processed", "userID": msg.UserID}
-}
-
-// Функция для обработки сообщений "join"
-func UserJoinService(msg Message) map[string]string {
-	return map[string]string{"status": "success", "message": "User joined", "userID": msg.UserID}
-}
-
-func LoginService(msg Message) map[string]string {
-	data := harvester.Login()
-	authData := fmt.Sprintf("AuthId: %v, UserId: %v", data.AuthId, data.UserId)
-	return map[string]string{"status": "success", "message": authData, "userID": msg.UserID}
-}
 
 // Структура для маршрутов сервера
-type ServerRoutes map[string]func(Message) map[string]string
+type ServerRoutes map[string]func(message harvester.Message) map[string]string
 
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
 		return true // Разрешить все источники для простоты
 	},
-}
-
-type Client struct {
-	Conn *websocket.Conn
 }
 
 func main() {
@@ -87,7 +59,7 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 	email := r.Header.Get("Auth-Email")
 
 	err = db.Collection("members").FindOne(ctx, bson.M{"email": email}).Decode(&resultEmail)
-	if err == mongo.ErrNoDocuments {
+	if errors.Is(err, mongo.ErrNoDocuments) {
 		conn.WriteMessage(websocket.TextMessage, []byte("Email не найден"))
 		return
 	} else if err != nil {
@@ -97,13 +69,12 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 
 	// Определение маршрутов
 	routes := ServerRoutes{
-		"vehicles": VehicleService,
-		"join":     UserJoinService,
-		"login":    LoginService,
+		"vehicles": harvester.VehicleListService,
+		"login":    harvester.LoginService,
 	}
 
 	for {
-		var msg Message
+		var msg harvester.Message
 		err := conn.ReadJSON(&msg)
 		if err != nil {
 			fmt.Println("Error reading JSON:", err)

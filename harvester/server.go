@@ -1,32 +1,27 @@
 package harvester
 
 import (
-	"github.com/gorilla/websocket"
-	"log"
-	"net/http"
+	"fmt"
 )
 
-var upgrader = websocket.Upgrader{} // use default options
-
-func ServerStart(w http.ResponseWriter, r *http.Request) {
-	c, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Print("Upgrade:", err)
-		return
-	}
-	defer c.Close()
-	for {
-		mt, message, err := c.ReadMessage()
-		if err != nil {
-			log.Println("Read:", err)
-			break
-		}
-		log.Printf("Recv: %s", message)
-		err = c.WriteMessage(mt, message)
-		log.Printf("Write:%d - %s", mt, message)
-		if err != nil {
-			log.Println("Write:", err)
-			break
-		}
-	}
+type Message struct {
+	UserID string `json:"userID"`
+	Type   string `json:"type"`
 }
+
+// Функция для обработки сообщений "vehicles"
+func VehicleListService(msg Message) map[string]string {
+	data := GetVehicleList(authPostData)
+	fmt.Printf("VEHICLES: %v", data)
+	vehicleData := fmt.Sprintf("%v", data)
+	return map[string]string{"status": "success", "message": vehicleData, "userID": msg.UserID}
+}
+
+func LoginService(msg Message) map[string]string {
+	data := Login()
+	authData := fmt.Sprintf("AuthId: %v, UserId: %v", data.AuthId, data.UserId)
+	return map[string]string{"status": "success", "message": authData, "userID": msg.UserID}
+}
+
+// Структура для маршрутов сервера
+type ServerRoutes map[string]func(Message) map[string]string
