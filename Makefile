@@ -35,6 +35,8 @@ run:
 test:
 	$(GO) test -v ./...
 
+changelog:
+	git-chglog -o CHANGELOG.md
 
 # Clean build artifacts
 clean:
