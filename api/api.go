@@ -75,12 +75,6 @@ func RegisterRouter(r *gin.Engine, conf *config.Config, db *mongo.Database) {
 	v1 := api.Group("/v1")
 	{
 
-		membersRouterGroup := v1.Group("/members")
-		routers.Members(membersRouterGroup, db)
-
-		authTotp := membersRouterGroup.Group("/totp")
-		routers.AuthTotp(authTotp, db)
-
 		vehicles := v1.Group("/vehicles", middlewares.Authentication(conf), middlewares.Authorization([]string{"member"}))
 		routers.Vehicles(vehicles, db)
 
@@ -89,6 +83,12 @@ func RegisterRouter(r *gin.Engine, conf *config.Config, db *mongo.Database) {
 
 		roles := v1.Group("/roles")
 		routers.Roles(roles, db)
+
+		membersRouterGroup := v1.Group("/members")
+		routers.Members(membersRouterGroup, db)
+
+		authTotp := membersRouterGroup.Group("/totp")
+		routers.AuthTotp(authTotp, db)
 	}
 
 	r.Static("/uploads", "./uploads")

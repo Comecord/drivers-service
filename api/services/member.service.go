@@ -153,6 +153,21 @@ func (m *MemberService) Login(req *dto.MemberAuth) (*dto.TokenDetail, error) {
 }
 
 func (m *MemberService) Update(req *dto.MemberUpdate) (*dto.MemberResponse, error) {
+
+	docs, _ := tools.ToDoc(req)
+
+	query := bson.M{"_id": req.ID}
+	_, err := m.Collection.UpdateOne(m.ctx, query, bson.M{"$set": docs})
+	if err != nil {
+		return nil, err
+	}
+	var member *dto.MemberResponse
+	query = bson.M{"_id": req.ID}
+	err = m.Collection.FindOne(m.ctx, query).Decode(&member)
+	if err != nil {
+		return nil, err
+	}
+
 	return nil, nil
 
 }
