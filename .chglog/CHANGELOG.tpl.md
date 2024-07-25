@@ -1,16 +1,17 @@
 {{ if .Versions -}}
 <a name="unreleased"></a>
-## [Unreleased]
+## [Development]
 
 {{ if .Unreleased.CommitGroups -}}
 {{ range .Unreleased.CommitGroups -}}
 ### {{ .Title }}
 {{ range .Commits -}}
-- {{ if .Scope }}**{{ .Scope }}:** {{ end }}{{ .Subject }}
-  {{ end }}
-  {{ end -}}
-  {{ end -}}
-  {{ end -}}
+{{ if .Scope }}
+- **{{ .Scope }}:** {{ end }} {{ .Subject }} 
+{{ end }} 
+{{ end -}} 
+{{ end -}} 
+{{ end -}}
 
 {{ range .Versions }}
 <a name="{{ .Tag.Name }}"></a>
@@ -18,7 +19,8 @@
 {{ range .CommitGroups -}}
 ### {{ .Title }}
 {{ range .Commits -}}
-- {{ if .Scope }}**{{ .Scope }}:** {{ end }}{{ .Subject }}
+- {{ if .Scope }}**{{ .Scope }}:** {{ end }}
+- {{ .Subject }}
   {{ end }}
   {{ end -}}
 
@@ -33,8 +35,8 @@
 ### Pull Requests
 {{ range .MergeCommits -}}
 - {{ .Header }}
-  {{ end }}
-  {{ end -}}
+{{ end }}
+{{ end -}}
 
 {{- if .NoteGroups -}}
 {{ range .NoteGroups -}}
