@@ -6,10 +6,10 @@ server:
   externalPort: 5100
   runMode: debug
 smtp:
-  emailFrom: tester@comecord.com
+  emailFrom: notify@comecord.com
   smtpHost: smtp.comecord.com
   smtpPort: 587
-  smtpUser: icehuntmen@gmail.com
+  smtpUser: noreply@comecord.com
   smtpPass: <PASSWORD>
   smtpAuth: false
   smtpSecure: true
@@ -20,6 +20,9 @@ logger:
   logger: logrus
 cors:
   allowOrigins: "*"
+notify:
+  telegramToken: 9876543210098765432109876543211111
+  telegramChatId: -1234567890
 mongox:
   host: localhost
   port: 27017

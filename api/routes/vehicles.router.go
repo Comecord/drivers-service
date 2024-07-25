@@ -2,7 +2,7 @@ package routers
 
 import (
 	"context"
-	"drivers-service/api/controllers"
+	"drivers-service/api/handlers"
 	"drivers-service/config"
 	"drivers-service/pkg/logging"
 	"github.com/gin-gonic/gin"
@@ -14,7 +14,7 @@ var log = logging.NewLogger(config.GetConfig())
 func Vehicles(r *gin.RouterGroup, db *mongo.Database) {
 	cfg := config.GetConfig()
 	ctx := context.Background()
-	h := controllers.NewVehiclesController(db, ctx, cfg)
+	h := handlers.NewVehiclesController(db, ctx, cfg)
 	//
 	r.POST("/", h.Create)
 	//r.PATCH("/:id", h.Update)

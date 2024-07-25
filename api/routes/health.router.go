@@ -1,7 +1,7 @@
 package routers
 
 import (
-	handlers "drivers-service/api/controllers"
+	handlers "drivers-service/api/handlers"
 	"github.com/gin-gonic/gin"
 )
 

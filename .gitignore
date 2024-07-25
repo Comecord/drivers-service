@@ -7,6 +7,7 @@
 logs/
 tmp/
 uploads/
+config/config-dev.yml
 # Test binary, built with `go test -c`
 *.test
 

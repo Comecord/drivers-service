@@ -1,4 +1,4 @@
-package controllers
+package handlers
 
 import (
 	"context"
@@ -30,7 +30,7 @@ func NewMemberController(db *mongo.Database, ctx context.Context, conf *config.C
 //
 //	@Summary		Registration a member
 //	@Description	Registration a member
-//	@Tags			Members
+//	@Tags			Auth
 //	@Accept			json
 //	@produces		json
 //	@Param			Request	body		dto.MemberRegistration		true	"member"
@@ -61,7 +61,7 @@ func (mc *MemberController) Register(ctx *gin.Context) {
 //
 //	@Summary		Login a member
 //	@Description	Login a member
-//	@Tags			Members
+//	@Tags			Auth
 //	@Accept			json
 //	@produces		json
 //	@Param			Request	body		dto.MemberAuth				true	"member"
@@ -85,4 +85,34 @@ func (mc *MemberController) Login(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusCreated, components.GenerateBaseResponse(token, true, components.Success))
+}
+
+// Update Member godoc
+//
+//	@Summary		Update a member
+//	@Description	Update a member
+//	@Tags			Members
+//	@Accept			json
+//	@produces		json
+//	@Param			Request	body		dto.MemberUpdate		true	"member"
+//	@Success		201		{object}	components.BaseHttpResponse	"Success"
+//	@Failure		400		{object}	components.BaseHttpResponse	"Failed"
+//	@Failure		409		{object}	components.BaseHttpResponse	"Failed"
+//	@Router			/api/v1/members/update [post]
+//	@Security		AuthBearer
+func (mc *MemberController) Update(ctx *gin.Context) {
+	req := new(dto.MemberUpdate)
+	err := ctx.ShouldBindJSON(&req)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest,
+			components.GenerateBaseResponseWithValidationError(nil, false, components.ValidationError, err))
+		return
+	}
+	res, err := mc.service.Update(req)
+	if err != nil {
+		ctx.AbortWithStatusJSON(components.TranslateErrorToStatusCode(err), components.GenerateBaseResponseWithError(nil, false, components.ValidationError, err))
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, components.GenerateBaseResponse(res, true, components.Success))
 }

@@ -42,16 +42,11 @@ type MemberRegistration struct {
 
 type MemberUpdate struct {
 	ID         string                `json:"id,omitempty"`
-	Email      string                `json:"email,omitempty"`
-	Password   string                `json:"password,omitempty"`
 	FirstName  string                `json:"firstName,omitempty"`
 	LastName   string                `json:"lastName,omitempty"`
 	MiddleName string                `json:"middleName,omitempty"`
 	Birthday   time.Time             `json:"birthday,omitempty"`
-	Phone      string                `json:"phone,omitempty"`
 	Location   models.MemberLocation `json:"location,omitempty"`
-	Role       models.MemberRole     `json:"-"`
-	CreatedAt  string                `json:"-"`
 	UpdatedAt  string                `json:"-"`
 }
 

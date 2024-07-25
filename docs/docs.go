@@ -55,7 +55,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Members"
+                    "Auth"
                 ],
                 "summary": "Login a member",
                 "parameters": [
@@ -98,7 +98,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Members"
+                    "Auth"
                 ],
                 "summary": "Registration a member",
                 "parameters": [
@@ -198,6 +198,54 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/dto.TotpRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/components.BaseHttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/components.BaseHttpResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/components.BaseHttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/members/update": {
+            "post": {
+                "security": [
+                    {
+                        "AuthBearer": []
+                    }
+                ],
+                "description": "Update a member",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Members"
+                ],
+                "summary": "Update a member",
+                "parameters": [
+                    {
+                        "description": "member",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.MemberUpdate"
                         }
                     }
                 ],
@@ -493,6 +541,29 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.MemberUpdate": {
+            "type": "object",
+            "properties": {
+                "birthday": {
+                    "type": "string"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "location": {
+                    "$ref": "#/definitions/models.MemberLocation"
+                },
+                "middleName": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.Role": {
             "type": "object",
             "properties": {
@@ -535,6 +606,23 @@ const docTemplate = `{
                 "issuer": {
                     "type": "string",
                     "example": "comecord.com"
+                }
+            }
+        },
+        "models.MemberLocation": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "postcode": {
+                    "type": "string"
                 }
             }
         },
