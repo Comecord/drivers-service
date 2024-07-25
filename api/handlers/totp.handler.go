@@ -61,12 +61,12 @@ func (to *TotpController) GenerateAuthentication(ctx *gin.Context) {
 //	@Tags			Auth
 //	@Accept			json
 //	@produces		json
-//	@Param			code	path		string							true	"Code"
+//	@Param			code	path		string						true	"Code"
 //	@Success		201		{object}	components.BaseHttpResponse	"Success"
 //	@Failure		400		{object}	components.BaseHttpResponse	"Failed"
 //	@Failure		409		{object}	components.BaseHttpResponse	"Failed"
 //	@Router			/api/v1/members/totp/active/{code} [get]
-//	@Security		AuthBearer
+//	@Security		BearerAuth
 func (toc *TotpController) ActiveAuthentication(ctx *gin.Context) {
 	var request dto.TotpCodeVerify
 	request.Code = ctx.Param("code")

@@ -33,6 +33,6 @@ type Member struct {
 	IsTotp       bool           `json:"isTotp,omitempty" default:"false" bson:"isTotp,omitempty"`
 	FileQRCode   string         `json:"fileQrCode,omitempty" bson:"fileQrCode,omitempty"`
 	SecretQrCode string         `json:"secretQrCode,omitempty" bson:"secretQrCode,omitempty"`
-	CreateAt     time.Time      `json:"createdAt,omitempty" bson:"createdAt,omitempty"`
+	CreatedAt    time.Time      `json:"createdAt,omitempty" bson:"createdAt,omitempty"`
 	UpdatedAt    time.Time      `json:"updatedAt,omitempty" bson:"updatedAt,omitempty"`
 }

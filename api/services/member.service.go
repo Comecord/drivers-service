@@ -2,18 +2,23 @@ package services
 
 import (
 	"context"
+	"drivers-service/api/components"
 	"drivers-service/api/dto"
 	"drivers-service/config"
+	"drivers-service/constants"
 	"drivers-service/data/models"
 	"drivers-service/pkg/logging"
 	"drivers-service/pkg/service_errors"
 	"drivers-service/pkg/tools"
 	"errors"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
+	"net/http"
+	"strings"
 	"time"
 )
 
@@ -28,7 +33,7 @@ type MemberService struct {
 	mailService  *EmailService
 }
 
-func NewMemberService(db *mongo.Database, cfg *config.Config, ctx context.Context, collectionName string) MemberInterface {
+func NewMemberService(db *mongo.Database, cfg *config.Config, ctx context.Context, collectionName string) *MemberService {
 	return &MemberService{
 		Mongo:        db,
 		Collection:   db.Collection(collectionName),
@@ -44,9 +49,9 @@ func NewMemberService(db *mongo.Database, cfg *config.Config, ctx context.Contex
 func (m *MemberService) Register(memberCreate *dto.MemberRegistration) error {
 
 	memberCreate.ID = tools.GenerateUUID()
-	memberCreate.CreateAt = time.Now()
-	memberCreate.UpdatedAt = memberCreate.CreateAt
-	memberCreate.Birthday = memberCreate.CreateAt
+	memberCreate.CreatedAt = time.Now()
+	memberCreate.UpdatedAt = memberCreate.CreatedAt
+	memberCreate.Birthday = memberCreate.CreatedAt
 	memberCreate.Verification = tools.GenerateUUID()
 
 	rolesCollection := m.Mongo.Collection("roles")
@@ -152,23 +157,110 @@ func (m *MemberService) Login(req *dto.MemberAuth) (*dto.TokenDetail, error) {
 
 }
 
-func (m *MemberService) Update(req *dto.MemberUpdate) (*dto.MemberResponse, error) {
+func (m *MemberService) Update(res *dto.MemberUpdate, ctx *gin.Context) (*dto.MemberResponse, error) {
 
-	docs, _ := tools.ToDoc(req)
-
-	query := bson.M{"_id": req.ID}
-	_, err := m.Collection.UpdateOne(m.ctx, query, bson.M{"$set": docs})
+	member, err := m.getEmailUser(ctx)
 	if err != nil {
 		return nil, err
 	}
-	var member *dto.MemberResponse
-	query = bson.M{"_id": req.ID}
+
+	updateData, _ := m.updateDataValidation(res)
+
+	query := bson.M{"email": member.Email}
+
+	_, err = m.Collection.UpdateOne(m.ctx, query, bson.M{"$set": updateData})
+	if err != nil {
+		return nil, err
+	}
+
+	var memberRes *dto.MemberResponse
+	query = bson.M{"_id": member.ID}
+	err = m.Collection.FindOne(m.ctx, query).Decode(&memberRes)
+	if err != nil {
+		return nil, err
+	}
+
+	return memberRes, nil
+
+}
+
+func (m *MemberService) updateDataValidation(updateData *dto.MemberUpdate) (bson.M, error) {
+	update := bson.M{}
+
+	// Добавляем поля для обновления только если они не пустые
+	if updateData.FirstName != "" {
+		update["firstName"] = updateData.FirstName
+	}
+	if updateData.LastName != "" {
+		update["lastName"] = updateData.LastName
+	}
+	if updateData.MiddleName != "" {
+		update["middleName"] = updateData.MiddleName
+	}
+	if !updateData.Birthday.IsZero() {
+		update["birthday"] = updateData.Birthday
+	}
+	if (dto.MemberLocationResponse{}) != updateData.Location { // Проверяем, не является ли Location пустой структурой
+		update["location"] = updateData.Location
+	}
+
+	locationUpdate := bson.M{}
+	if updateData.Location.Address != "" {
+		locationUpdate["address"] = updateData.Location.Address
+	}
+	if updateData.Location.City != "" {
+		locationUpdate["city"] = updateData.Location.City
+	}
+	if updateData.Location.Postcode != "" {
+		locationUpdate["postcode"] = updateData.Location.Postcode
+	}
+	if updateData.Location.Country != "" {
+		locationUpdate["country"] = updateData.Location.Country
+	}
+
+	// Если есть обновления по Location, добавляем в общий update
+	if len(locationUpdate) > 0 {
+		update["location"] = locationUpdate
+	}
+
+	update["updatedAt"] = time.Now() // Обновляем время
+
+	if len(update) == 0 {
+		return nil, errors.New("нет полей для обновления")
+	}
+
+	return update, nil
+}
+
+func (m *MemberService) getEmailUser(ctx *gin.Context) (models.Member, error) {
+	claimMap := map[string]interface{}{}
+	auth := ctx.GetHeader(constants.AuthorizationHeaderKey)
+	fmt.Errorf("claimMap: %v", claimMap)
+	tokenParts := strings.Split(auth, " ")
+	if tokenParts[0] != "Bearer" {
+		err := &service_errors.ServiceError{EndUserMessage: service_errors.TokenBearer}
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized,
+			components.GenerateBaseResponseWithError(nil, false, components.AuthError, err))
+		return models.Member{}, err
+	}
+
+	claimMap, err := m.tokenService.GetClaims(tokenParts[1])
+	fmt.Errorf("claimMap: %v", claimMap)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized,
+			components.GenerateBaseResponseWithError(nil, false, components.AuthError, err))
+		return models.Member{}, err
+	}
+
+	var member models.Member
+	query := bson.M{"email": claimMap[constants.EmailKey]}
 	err = m.Collection.FindOne(m.ctx, query).Decode(&member)
 	if err != nil {
-		return nil, err
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized,
+			components.GenerateBaseResponseWithError(nil, false, components.AuthError, err))
+		return models.Member{}, err
 	}
-
-	return nil, nil
+	return member, nil
 
 }
 

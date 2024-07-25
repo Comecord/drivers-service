@@ -17,12 +17,8 @@ type MemberController struct {
 }
 
 func NewMemberController(db *mongo.Database, ctx context.Context, conf *config.Config) *MemberController {
-	service, ok := services.NewMemberService(db, conf, ctx, "members").(*services.MemberService)
-	if !ok {
-		return nil
-	}
 	return &MemberController{
-		service: service,
+		service: services.NewMemberService(db, conf, ctx, "members"),
 	}
 }
 
@@ -94,21 +90,22 @@ func (mc *MemberController) Login(ctx *gin.Context) {
 //	@Tags			Members
 //	@Accept			json
 //	@produces		json
-//	@Param			Request	body		dto.MemberUpdate		true	"member"
+//	@Param			Request	body		dto.MemberUpdate			true	"member"
 //	@Success		201		{object}	components.BaseHttpResponse	"Success"
 //	@Failure		400		{object}	components.BaseHttpResponse	"Failed"
 //	@Failure		409		{object}	components.BaseHttpResponse	"Failed"
-//	@Router			/api/v1/members/update [post]
-//	@Security		AuthBearer
+//	@Router			/api/v1/members/updates [patch]
+//	@Security		BearerAuth
 func (mc *MemberController) Update(ctx *gin.Context) {
-	req := new(dto.MemberUpdate)
-	err := ctx.ShouldBindJSON(&req)
+	var member *dto.MemberUpdate
+	err := ctx.ShouldBindJSON(&member)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest,
-			components.GenerateBaseResponseWithValidationError(nil, false, components.ValidationError, err))
+			components.GenerateBaseResponseWithValidationError(err, false, components.ValidationError, err))
 		return
 	}
-	res, err := mc.service.Update(req)
+
+	res, err := mc.service.Update(member, ctx)
 	if err != nil {
 		ctx.AbortWithStatusJSON(components.TranslateErrorToStatusCode(err), components.GenerateBaseResponseWithError(nil, false, components.ValidationError, err))
 		return

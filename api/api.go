@@ -63,10 +63,10 @@ func RegisterSwagger(r *gin.Engine, cfg *config.Config) {
 //	@license.name	Apache 2.0
 //	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @securityDefinitions.apikey BearerAuth
-// @in header
-// @name Authorization
-// @description Type "Bearer" followed by a space and then your token.
+//	@securityDefinitions.apikey	BearerAuth
+//	@in							header
+//	@name						Authorization
+//	@description				Type "Bearer" followed by a space and then your token.
 
 // @externalDocs.description	OpenAPI
 // @externalDocs.url			https://swagger.io/resources/open-api/
@@ -74,6 +74,11 @@ func RegisterRouter(r *gin.Engine, conf *config.Config, db *mongo.Database) {
 	api := r.Group("/api")
 	v1 := api.Group("/v1")
 	{
+		membersRouterGroup := v1.Group("/members")
+		routers.Members(membersRouterGroup, db)
+
+		authTotp := membersRouterGroup.Group("/totp")
+		routers.AuthTotp(authTotp, db)
 
 		vehicles := v1.Group("/vehicles", middlewares.Authentication(conf), middlewares.Authorization([]string{"member"}))
 		routers.Vehicles(vehicles, db)
@@ -84,11 +89,6 @@ func RegisterRouter(r *gin.Engine, conf *config.Config, db *mongo.Database) {
 		roles := v1.Group("/roles")
 		routers.Roles(roles, db)
 
-		membersRouterGroup := v1.Group("/members")
-		routers.Members(membersRouterGroup, db)
-
-		authTotp := membersRouterGroup.Group("/totp")
-		routers.AuthTotp(authTotp, db)
 	}
 
 	r.Static("/uploads", "./uploads")

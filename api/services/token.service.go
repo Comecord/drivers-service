@@ -6,6 +6,7 @@ import (
 	"drivers-service/constants"
 	"drivers-service/pkg/logging"
 	"drivers-service/pkg/service_errors"
+	"fmt"
 	"github.com/golang-jwt/jwt"
 	"time"
 )
@@ -64,7 +65,14 @@ func (s *TokenService) GenerateToken(token *tokenDto) (*dto.TokenDetail, error) 
 		return nil, err
 	}
 
-	return td, nil
+	tokenNew := &dto.TokenDetail{}
+	tokenNew.AccessToken = td.AccessToken
+	tokenNew.BearerToken = fmt.Sprintf("Bearer %s", td.AccessToken)
+	tokenNew.AccessTokenExpireTime = td.AccessTokenExpireTime
+	tokenNew.RefreshToken = td.RefreshToken
+	tokenNew.RefreshTokenExpireTime = td.RefreshTokenExpireTime
+
+	return tokenNew, nil
 }
 
 func (s *TokenService) VerifyToken(token string) (*jwt.Token, error) {

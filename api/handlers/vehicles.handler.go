@@ -28,16 +28,16 @@ func NewVehiclesController(db *mongo.Database, ctx context.Context, conf *config
 
 // Create Vehicle godoc
 //
-//		@Summary		Create a vehicle
-//		@Description	Create a vehicle
-//		@Tags			Vehicles
-//		@Accept			json
-//		@produces		json
-//		@Param			Request	body		dto.CreateVehicleRequest								true	"Create a vehicle model"
-//		@Success		201		{object}	components.BaseHttpResponse{result=dto.DBVehicleDTO}	"Created response"
-//		@Failure		400		{object}	components.BaseHttpResponse								"Bad request"
-//		@Router			/api/v1/vehicles/ [post]
-//	 @Security       BearerAuth
+//	@Summary		Create a vehicle
+//	@Description	Create a vehicle
+//	@Tags			Vehicles
+//	@Accept			json
+//	@produces		json
+//	@Param			Request	body		dto.CreateVehicleRequest								true	"Create a vehicle model"
+//	@Success		201		{object}	components.BaseHttpResponse{result=dto.DBVehicleDTO}	"Created response"
+//	@Failure		400		{object}	components.BaseHttpResponse								"Bad request"
+//	@Router			/api/v1/vehicles/ [post]
+//	@Security		BearerAuth
 func (vc *VehiclesController) Create(ctx *gin.Context) {
 	var vehicle *dto.CreateVehicleRequest
 

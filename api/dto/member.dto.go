@@ -5,18 +5,28 @@ import (
 	"time"
 )
 
+type MemberLocationResponse struct {
+	Address  string `json:"address" bson:"address,omitempty"`
+	City     string `json:"city" bson:"city,omitempty"`
+	Postcode string `json:"postcode" bson:"postcode,omitempty"`
+	Country  string `json:"country" bson:"country,omitempty"`
+}
+type MemberRoleResponse struct {
+	Name        string   `json:"name,omitempty" bson:"name,omitempty"`
+	Permissions []string `json:"permissions,omitempty" bson:"permissions,omitempty"`
+}
+
 type MemberResponse struct {
-	Email        string                `json:"email,omitempty"`
-	FirstName    string                `json:"firstName,omitempty"`
-	LastName     string                `json:"lastName,omitempty"`
-	MiddleName   string                `json:"middleName,omitempty"`
-	Birthday     time.Time             `json:"birthday,omitempty"`
-	Phone        string                `json:"phone,omitempty"`
-	Location     models.MemberLocation `json:"location,omitempty"`
-	Role         []models.MemberRole   `json:"role,omitempty"`
-	Verification string                `json:"-"`
-	CreateAt     time.Time             `json:"createdAt,omitempty" bson:"createdAt,omitempty"`
-	UpdatedAt    time.Time             `json:"updatedAt,omitempty" bson:"updatedAt,omitempty"`
+	ID         string                 `json:"id" bson:"_id,omitempty"`
+	FirstName  string                 `json:"firstName,omitempty"`
+	LastName   string                 `json:"lastName,omitempty"`
+	MiddleName string                 `json:"middleName,omitempty"`
+	Birthday   time.Time              `json:"birthday,omitempty"`
+	Phone      string                 `json:"phone,omitempty"`
+	Location   MemberLocationResponse `json:"location,omitempty"`
+	Role       []MemberRoleResponse   `json:"role" bson:"role"`
+	CreatedAt  time.Time              `json:"createdAt,omitempty" bson:"createdAt"`
+	UpdatedAt  time.Time              `json:"updatedAt,omitempty" bson:"updatedAt"`
 }
 
 type MemberRegistration struct {
@@ -36,18 +46,17 @@ type MemberRegistration struct {
 	IsTotp       bool                  `json:"-" default:"false" bson:"isTotp,omitempty"`
 	FileQRCode   string                `json:"-"`
 	SecretQrCode string                `json:"-"`
-	CreateAt     time.Time             `json:"-"`
-	UpdatedAt    time.Time             `json:"-"`
+	CreatedAt    time.Time             `json:"-" bson:"createdAt"`
+	UpdatedAt    time.Time             `json:"-"  bson:"updatedAt"`
 }
 
 type MemberUpdate struct {
-	ID         string                `json:"id,omitempty"`
-	FirstName  string                `json:"firstName,omitempty"`
-	LastName   string                `json:"lastName,omitempty"`
-	MiddleName string                `json:"middleName,omitempty"`
-	Birthday   time.Time             `json:"birthday,omitempty"`
-	Location   models.MemberLocation `json:"location,omitempty"`
-	UpdatedAt  string                `json:"-"`
+	FirstName  string                 `json:"firstName"  example:"Alexander"`
+	LastName   string                 `json:"lastName"  example:"Hunter"`
+	MiddleName string                 `json:"middleName"  example:"-"`
+	Birthday   time.Time              `json:"birthday"  example:"1972-01-01T00:00:00Z"`
+	Location   MemberLocationResponse `json:"location"  bson:"location"`
+	UpdatedAt  time.Time              `json:"-"  bson:"updatedAt"`
 }
 
 type MemberAuth struct {
