@@ -35,6 +35,10 @@ type Config struct {
 	Cors struct {
 		AllowOrigins string `yaml:"allowOrigins"`
 	}
+	Notify struct {
+		TelegramToken  string `yaml:"telegramToken"`
+		TelegramChatId int64  `yaml:"telegramChatId"`
+	}
 	MongoX struct {
 		Host           string `yaml:"host"`
 		Port           string `yaml:"port"`
