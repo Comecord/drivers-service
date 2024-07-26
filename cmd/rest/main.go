@@ -15,10 +15,17 @@ import (
 )
 
 var logger = logging.NewLogger(config.GetConfig())
+var conf = config.GetConfig()
+var ctx = context.TODO()
+
+func init() {
+	err := cache.InitRedis(conf, ctx)
+	if err != nil {
+		logger.Error(logging.Redis, logging.Connection, err.Error(), map[logging.ExtraKey]interface{}{"Version": conf.Version})
+	}
+}
 
 func main() {
-	conf := config.GetConfig()
-	ctx := context.TODO()
 
 	if _, err := os.Stat("uploads"); os.IsNotExist(err) {
 		err := os.Mkdir("uploads", os.ModePerm)
@@ -46,10 +53,10 @@ func main() {
 		defer wg.Done()
 		database, _ := mongox.Connection(conf, ctx, logger)
 		seeds.SeedRoles(database, ctx)
-		err := cache.InitRedis(conf, ctx)
-		if err != nil {
-			logger.Error(logging.Redis, logging.Connection, err.Error(), map[logging.ExtraKey]interface{}{"Version": conf.Version})
-		}
+		//err := cache.InitRedis(conf, ctx)
+		//if err != nil {
+		//	logger.Error(logging.Redis, logging.Connection, err.Error(), map[logging.ExtraKey]interface{}{"Version": conf.Version})
+		//}
 		logger.Infof("Listening on Swagger http://localhost:%d/swagger/index.html", conf.Server.IPort)
 		api.InitialServer(conf, database, logger)
 	}()
