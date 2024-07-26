@@ -2,8 +2,8 @@ package services
 
 import (
 	"context"
-	"crm-glonass/config"
-	"crm-glonass/pkg/logging"
+	"drivers-service/config"
+	"drivers-service/pkg/logging"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 

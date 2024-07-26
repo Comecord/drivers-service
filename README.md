@@ -70,7 +70,16 @@ pre-commit install
 ```
 
 [ Windows ]
-Смотрите установку 
+ 
+
+
+# CHANGELOG
+
+```shell
+go install github.com/git-chglog/git-chglog/cmd/git-chglog@latest
+
+```
+
 
 ## Swagger Init
 <details>

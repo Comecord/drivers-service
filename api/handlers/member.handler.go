@@ -1,11 +1,11 @@
-package controllers
+package handlers
 
 import (
 	"context"
-	"crm-glonass/api/components"
-	"crm-glonass/api/dto"
-	"crm-glonass/api/services"
-	"crm-glonass/config"
+	"drivers-service/api/components"
+	"drivers-service/api/dto"
+	"drivers-service/api/services"
+	"drivers-service/config"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -17,12 +17,8 @@ type MemberController struct {
 }
 
 func NewMemberController(db *mongo.Database, ctx context.Context, conf *config.Config) *MemberController {
-	service, ok := services.NewMemberService(db, conf, ctx, "members").(*services.MemberService)
-	if !ok {
-		return nil
-	}
 	return &MemberController{
-		service: service,
+		service: services.NewMemberService(db, conf, ctx, "members"),
 	}
 }
 
@@ -30,7 +26,7 @@ func NewMemberController(db *mongo.Database, ctx context.Context, conf *config.C
 //
 //	@Summary		Registration a member
 //	@Description	Registration a member
-//	@Tags			Members
+//	@Tags			Auth
 //	@Accept			json
 //	@produces		json
 //	@Param			Request	body		dto.MemberRegistration		true	"member"
@@ -61,7 +57,7 @@ func (mc *MemberController) Register(ctx *gin.Context) {
 //
 //	@Summary		Login a member
 //	@Description	Login a member
-//	@Tags			Members
+//	@Tags			Auth
 //	@Accept			json
 //	@produces		json
 //	@Param			Request	body		dto.MemberAuth				true	"member"
@@ -80,10 +76,40 @@ func (mc *MemberController) Login(ctx *gin.Context) {
 	fmt.Println(req)
 	token, err := mc.service.Login(req)
 	if err != nil {
-		ctx.AbortWithStatusJSON(components.TranslateErrorToStatusCode(err),
-			components.GenerateBaseResponseWithError(nil, false, components.InternalError, err))
+		ctx.AbortWithStatusJSON(components.TranslateErrorToStatusCode(err), components.GenerateBaseResponseWithError(nil, false, components.ValidationError, err))
 		return
 	}
 
 	ctx.JSON(http.StatusCreated, components.GenerateBaseResponse(token, true, components.Success))
+}
+
+// Update Member godoc
+//
+//	@Summary		Update a member
+//	@Description	Update a member
+//	@Tags			Members
+//	@Accept			json
+//	@produces		json
+//	@Param			Request	body		dto.MemberUpdate			true	"member"
+//	@Success		201		{object}	components.BaseHttpResponse	"Success"
+//	@Failure		400		{object}	components.BaseHttpResponse	"Failed"
+//	@Failure		409		{object}	components.BaseHttpResponse	"Failed"
+//	@Router			/api/v1/members/updates [patch]
+//	@Security		BearerAuth
+func (mc *MemberController) Update(ctx *gin.Context) {
+	var member *dto.MemberUpdate
+	err := ctx.ShouldBindJSON(&member)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest,
+			components.GenerateBaseResponseWithValidationError(err, false, components.ValidationError, err))
+		return
+	}
+
+	res, err := mc.service.Update(member, ctx)
+	if err != nil {
+		ctx.AbortWithStatusJSON(components.TranslateErrorToStatusCode(err), components.GenerateBaseResponseWithError(nil, false, components.ValidationError, err))
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, components.GenerateBaseResponse(res, true, components.Success))
 }

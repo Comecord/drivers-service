@@ -2,8 +2,8 @@ package cache
 
 import (
 	"context"
-	"crm-glonass/config"
-	"crm-glonass/pkg/logging"
+	"drivers-service/config"
+	"drivers-service/pkg/logging"
 	"encoding/json"
 	"fmt"
 	"github.com/go-redis/redis/v8"

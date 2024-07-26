@@ -2,8 +2,8 @@ package mongox
 
 import (
 	"context"
-	"crm-glonass/config"
-	"crm-glonass/pkg/logging"
+	"drivers-service/config"
+	"drivers-service/pkg/logging"
 	"errors"
 	"fmt"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -20,11 +20,15 @@ var (
 )
 
 func InitMongoClient(conf *config.Config, ctx context.Context, logger logging.Logger) error {
-	mongoUrl := fmt.Sprintf(`mongodb://%s:%s@%s:%s/%s?authSource=%s`,
+	mongoUrl := fmt.Sprintf(`mongodb://%s:%s@%s:%s/%s`,
 		conf.MongoX.Username, conf.MongoX.Password, conf.MongoX.Host, conf.MongoX.Port,
-		conf.MongoX.Database, conf.MongoX.AuthSource)
+		conf.MongoX.Database)
 
-	mongoconn := options.Client().ApplyURI(mongoUrl)
+	mongoconn := options.Client().ApplyURI(mongoUrl).SetAuth(options.Credential{
+		Username:   conf.MongoX.Username,
+		Password:   conf.MongoX.Password,
+		AuthSource: conf.MongoX.AuthSource,
+	})
 	var err error
 	clientInstance, err = mongo.Connect(ctx, mongoconn)
 	if err != nil {

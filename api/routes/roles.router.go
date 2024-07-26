@@ -2,8 +2,8 @@ package routers
 
 import (
 	"context"
-	"crm-glonass/api/controllers"
-	"crm-glonass/config"
+	"drivers-service/api/handlers"
+	"drivers-service/config"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -11,7 +11,7 @@ import (
 func Roles(r *gin.RouterGroup, db *mongo.Database) {
 	cfg := config.GetConfig()
 	ctx := context.Background()
-	h := controllers.NewRoleController(db, ctx, cfg)
+	h := handlers.NewRoleController(db, ctx, cfg)
 
 	r.POST("/create", h.Create)
 	r.GET("/list", h.List)

@@ -35,6 +35,7 @@ const (
 	Api             SubCategory = "Api"
 	StartUp         SubCategory = "StartUp"
 	HashPassword    SubCategory = "HashPassword"
+	SendEmail       SubCategory = "SendEmail"
 )
 
 const (

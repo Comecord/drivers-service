@@ -1,13 +1,13 @@
 package api
 
 import (
-	routers "crm-glonass/api/routes"
-	"crm-glonass/api/validations"
-	"crm-glonass/config"
-	"crm-glonass/docs"
-	_ "crm-glonass/docs"
-	"crm-glonass/middlewares"
-	"crm-glonass/pkg/logging"
+	routers "drivers-service/api/routes"
+	"drivers-service/api/validations"
+	"drivers-service/config"
+	"drivers-service/docs"
+	_ "drivers-service/docs"
+	"drivers-service/middlewares"
+	"drivers-service/pkg/logging"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -63,10 +63,10 @@ func RegisterSwagger(r *gin.Engine, cfg *config.Config) {
 //	@license.name	Apache 2.0
 //	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @securityDefinitions.apikey BearerAuth
-// @in header
-// @name Authorization
-// @description Type "Bearer" followed by a space and then your token.
+//	@securityDefinitions.apikey	BearerAuth
+//	@in							header
+//	@name						Authorization
+//	@description				Type "Bearer" followed by a space and then your token.
 
 // @externalDocs.description	OpenAPI
 // @externalDocs.url			https://swagger.io/resources/open-api/
@@ -74,7 +74,6 @@ func RegisterRouter(r *gin.Engine, conf *config.Config, db *mongo.Database) {
 	api := r.Group("/api")
 	v1 := api.Group("/v1")
 	{
-
 		membersRouterGroup := v1.Group("/members")
 		routers.Members(membersRouterGroup, db)
 
@@ -89,6 +88,7 @@ func RegisterRouter(r *gin.Engine, conf *config.Config, db *mongo.Database) {
 
 		roles := v1.Group("/roles")
 		routers.Roles(roles, db)
+
 	}
 
 	r.Static("/uploads", "./uploads")

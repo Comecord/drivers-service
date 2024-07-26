@@ -2,8 +2,10 @@ package routers
 
 import (
 	"context"
-	"crm-glonass/api/controllers"
-	"crm-glonass/config"
+	"drivers-service/api/handlers"
+	"drivers-service/config"
+	"drivers-service/middlewares"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -11,8 +13,9 @@ import (
 func Members(r *gin.RouterGroup, db *mongo.Database) {
 	cfg := config.GetConfig()
 	ctx := context.Background()
-	h := controllers.NewMemberController(db, ctx, cfg)
-
+	h := handlers.NewMemberController(db, ctx, cfg)
+	fmt.Printf("ROLES: %v", h)
 	r.POST("/register", h.Register)
 	r.POST("/login", h.Login)
+	r.PATCH("/updates", middlewares.Authentication(cfg), middlewares.Authorization([]string{"member", "admin"}), h.Update)
 }

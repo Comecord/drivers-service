@@ -55,7 +55,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Members"
+                    "Auth"
                 ],
                 "summary": "Login a member",
                 "parameters": [
@@ -98,7 +98,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Members"
+                    "Auth"
                 ],
                 "summary": "Registration a member",
                 "parameters": [
@@ -138,7 +138,7 @@ const docTemplate = `{
             "get": {
                 "security": [
                     {
-                        "AuthBearer": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Active TOTP authentication for member",
@@ -198,6 +198,54 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/dto.TotpRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/components.BaseHttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/components.BaseHttpResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/components.BaseHttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/members/updates": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update a member",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Members"
+                ],
+                "summary": "Update a member",
+                "parameters": [
+                    {
+                        "description": "member",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.MemberUpdate"
                         }
                     }
                 ],
@@ -381,6 +429,8 @@ const docTemplate = `{
             "enum": [
                 0,
                 40001,
+                40002,
+                40003,
                 40101,
                 40301,
                 40401,
@@ -392,6 +442,8 @@ const docTemplate = `{
             "x-enum-varnames": [
                 "Success",
                 "ValidationError",
+                "TokenValidationError",
+                "TotpValidationError",
                 "AuthError",
                 "ForbiddenError",
                 "NotFoundError",
@@ -453,6 +505,10 @@ const docTemplate = `{
         "dto.MemberAuth": {
             "type": "object",
             "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "123456"
+                },
                 "email": {
                     "type": "string",
                     "example": "user@comecord.com"
@@ -460,6 +516,23 @@ const docTemplate = `{
                 "password": {
                     "type": "string",
                     "example": "calista78Batista"
+                }
+            }
+        },
+        "dto.MemberLocationResponse": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "postcode": {
+                    "type": "string"
                 }
             }
         },
@@ -482,6 +555,30 @@ const docTemplate = `{
                 "phone": {
                     "type": "string",
                     "example": "+7 (999) 999-99-99"
+                }
+            }
+        },
+        "dto.MemberUpdate": {
+            "type": "object",
+            "properties": {
+                "birthday": {
+                    "type": "string",
+                    "example": "1972-01-01T00:00:00Z"
+                },
+                "firstName": {
+                    "type": "string",
+                    "example": "Alexander"
+                },
+                "lastName": {
+                    "type": "string",
+                    "example": "Hunter"
+                },
+                "location": {
+                    "$ref": "#/definitions/dto.MemberLocationResponse"
+                },
+                "middleName": {
+                    "type": "string",
+                    "example": "-"
                 }
             }
         },

@@ -3,13 +3,15 @@ package components
 type ResultCode int
 
 const (
-	Success         ResultCode = 0
-	ValidationError ResultCode = 40001
-	AuthError       ResultCode = 40101
-	ForbiddenError  ResultCode = 40301
-	NotFoundError   ResultCode = 40401
-	LimiterError    ResultCode = 42901
-	OtpLimiterError ResultCode = 442902
-	CustomRecovery  ResultCode = 50001
-	InternalError   ResultCode = 50002
+	Success              ResultCode = 0
+	ValidationError      ResultCode = 40001
+	TokenValidationError ResultCode = 40002
+	TotpValidationError  ResultCode = 40003
+	AuthError            ResultCode = 40101
+	ForbiddenError       ResultCode = 40301
+	NotFoundError        ResultCode = 40401
+	LimiterError         ResultCode = 42901
+	OtpLimiterError      ResultCode = 442902
+	CustomRecovery       ResultCode = 50001
+	InternalError        ResultCode = 50002
 )

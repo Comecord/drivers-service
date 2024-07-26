@@ -2,9 +2,9 @@ package seeds
 
 import (
 	"context"
-	"crm-glonass/config"
-	"crm-glonass/data/models"
-	"crm-glonass/pkg/logging"
+	"drivers-service/config"
+	"drivers-service/data/models"
+	"drivers-service/pkg/logging"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"

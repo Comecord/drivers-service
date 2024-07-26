@@ -1,11 +1,11 @@
 package middlewares
 
 import (
-	"crm-glonass/api/components"
-	"crm-glonass/api/services"
-	"crm-glonass/config"
-	"crm-glonass/constants"
-	"crm-glonass/pkg/service_errors"
+	"drivers-service/api/components"
+	"drivers-service/api/services"
+	"drivers-service/config"
+	"drivers-service/constants"
+	"drivers-service/pkg/service_errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
@@ -22,7 +22,6 @@ func Authentication(cfg *config.Config) gin.HandlerFunc {
 		claimMap := map[string]interface{}{}
 		auth := c.GetHeader(constants.AuthorizationHeaderKey)
 		tokenParts := strings.Split(auth, " ")
-		fmt.Printf("tokenParts: %v\n", auth)
 		if tokenParts[0] != "Bearer" {
 			err = &service_errors.ServiceError{EndUserMessage: service_errors.TokenBearer}
 			c.AbortWithStatusJSON(http.StatusUnauthorized,
@@ -36,7 +35,7 @@ func Authentication(cfg *config.Config) gin.HandlerFunc {
 			err = &service_errors.ServiceError{EndUserMessage: service_errors.TokenRequired}
 		} else {
 			claimMap, err = tokenService.GetClaims(token)
-
+			fmt.Errorf("CALM: %v", claimMap)
 			if err != nil {
 				switch err.(*jwt.ValidationError).Errors {
 				case jwt.ValidationErrorExpired:
@@ -62,6 +61,7 @@ func Authentication(cfg *config.Config) gin.HandlerFunc {
 }
 
 func Authorization(validRoles []string) gin.HandlerFunc {
+	fmt.Errorf("ROLES: %v", validRoles)
 	return func(c *gin.Context) {
 		if len(c.Keys) == 0 {
 			c.AbortWithStatusJSON(http.StatusForbidden,

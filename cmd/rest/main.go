@@ -2,18 +2,18 @@ package main
 
 import (
 	"context"
-	"crm-glonass/api"
-	"crm-glonass/api/client"
-	"crm-glonass/config"
-	"crm-glonass/data/cache"
 	mongox "crm-glonass/data/mongox"
-	"crm-glonass/data/seeds"
+	"drivers-service/api"
+	"drivers-service/config"
+	"drivers-service/data/cache"
+	mongox "drivers-service/data/mongox"
+	"drivers-service/data/seeds"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
 
-	"crm-glonass/pkg/logging"
+	"drivers-service/pkg/logging"
 )
 
 var logger = logging.NewLogger(config.GetConfig())

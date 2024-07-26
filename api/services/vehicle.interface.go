@@ -1,6 +1,6 @@
 package services
 
-import "crm-glonass/api/dto"
+import "drivers-service/api/dto"
 
 type VehicleServiceApi interface {
 	// Create creates a new vehicle post using the provided request.

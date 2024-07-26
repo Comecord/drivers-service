@@ -1,11 +1,12 @@
 package services
 
 import (
-	"crm-glonass/api/dto"
-	"crm-glonass/config"
-	"crm-glonass/constants"
-	"crm-glonass/pkg/logging"
-	"crm-glonass/pkg/service_errors"
+	"drivers-service/api/dto"
+	"drivers-service/config"
+	"drivers-service/constants"
+	"drivers-service/pkg/logging"
+	"drivers-service/pkg/service_errors"
+	"fmt"
 	"github.com/golang-jwt/jwt"
 	"time"
 )
@@ -22,7 +23,7 @@ type tokenDto struct {
 	Roles        []string
 }
 
-func NewTokenService(cfg *config.Config) TokenInterface {
+func NewTokenService(cfg *config.Config) *TokenService {
 	logger := logging.NewLogger(cfg)
 	return &TokenService{
 		Logger: logger,
@@ -64,7 +65,14 @@ func (s *TokenService) GenerateToken(token *tokenDto) (*dto.TokenDetail, error) 
 		return nil, err
 	}
 
-	return td, nil
+	tokenNew := &dto.TokenDetail{}
+	tokenNew.AccessToken = td.AccessToken
+	tokenNew.BearerToken = fmt.Sprintf("Bearer %s", td.AccessToken)
+	tokenNew.AccessTokenExpireTime = td.AccessTokenExpireTime
+	tokenNew.RefreshToken = td.RefreshToken
+	tokenNew.RefreshTokenExpireTime = td.RefreshTokenExpireTime
+
+	return tokenNew, nil
 }
 
 func (s *TokenService) VerifyToken(token string) (*jwt.Token, error) {

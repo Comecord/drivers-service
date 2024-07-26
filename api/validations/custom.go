@@ -1,7 +1,7 @@
 package validations
 
 import (
-	"crm-glonass/pkg/tools"
+	"drivers-service/pkg/tools"
 	"errors"
 	"github.com/go-playground/validator/v10"
 )

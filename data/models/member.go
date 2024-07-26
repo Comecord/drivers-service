@@ -29,9 +29,10 @@ type Member struct {
 	Location     MemberLocation `json:"location,omitempty" bson:"location,omitempty"`
 	Role         []MemberRole   `json:"role,omitempty" default:"[]" bson:"role,omitempty"`
 	Verified     bool           `json:"verified,omitempty" default:"false" bson:"verified,omitempty"`
+	Verification string         `json:"verification,omitempty" default:"" bson:"verification,omitempty"`
 	IsTotp       bool           `json:"isTotp,omitempty" default:"false" bson:"isTotp,omitempty"`
 	FileQRCode   string         `json:"fileQrCode,omitempty" bson:"fileQrCode,omitempty"`
 	SecretQrCode string         `json:"secretQrCode,omitempty" bson:"secretQrCode,omitempty"`
-	CreateAt     time.Time      `json:"createdAt,omitempty" bson:"createdAt,omitempty"`
+	CreatedAt    time.Time      `json:"createdAt,omitempty" bson:"createdAt,omitempty"`
 	UpdatedAt    time.Time      `json:"updatedAt,omitempty" bson:"updatedAt,omitempty"`
 }
