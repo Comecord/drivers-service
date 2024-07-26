@@ -2,10 +2,10 @@ package main
 
 import (
 	"context"
-	"crm-glonass/config"
-	"crm-glonass/data/mongox"
-	"crm-glonass/harvester"
-	"crm-glonass/pkg/logging"
+	"drivers-service/config"
+	"drivers-service/data/mongox"
+	"drivers-service/harvester"
+	"drivers-service/pkg/logging"
 	"errors"
 	"fmt"
 	"github.com/gorilla/websocket"

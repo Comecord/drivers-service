@@ -85,7 +85,6 @@ type Config struct {
 
 func GetConfig() *Config {
 	cfgPath := getConfigPath(os.Getenv("APP_ENV"))
-	log.Printf("ENV: %v\n", os.Getenv("APP_ENV"))
 	b, err := LoadConfig(cfgPath, "yml")
 	if err != nil {
 		log.Fatalf("Error in load config %v", err)

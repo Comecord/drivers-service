@@ -2,18 +2,16 @@ package main
 
 import (
 	"context"
-	mongox "crm-glonass/data/mongox"
 	"drivers-service/api"
 	"drivers-service/config"
 	"drivers-service/data/cache"
 	mongox "drivers-service/data/mongox"
 	"drivers-service/data/seeds"
+	"drivers-service/pkg/logging"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
-
-	"drivers-service/pkg/logging"
 )
 
 var logger = logging.NewLogger(config.GetConfig())
@@ -38,7 +36,7 @@ func main() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		client.ConnectSocket()
+		//client.ConnectSocket()
 		logger.Infof("Socket client connected")
 	}()
 
