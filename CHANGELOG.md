@@ -13,6 +13,8 @@
 
 - **changelog:**  Добавлен changelog 
 
+- **changelog:**  Добавлен changelog 
+
 - **config:**  новый пакет github.com/nikoksr/notify 
 
 - **config:**  Оповещение телеграм 
@@ -24,6 +26,8 @@
 - **members:**  Обновление мемберов 
 
 - **notify:**  Оповещение телеграм боту 
+
+- **redis:**  Удалены generic 
 
 - **struct:**  Смена модуля и настройка почтовой отправки писем 
  

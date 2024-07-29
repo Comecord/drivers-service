@@ -8,3 +8,9 @@ repos:
         language: golang
         pass_filenames: false
         always_run: true
+      - id: changelog
+        name: Update Changelog
+        entry: git-chglog -o CHANGELOG.md
+        language: system
+        pass_filenames: false
+        always_run: true
