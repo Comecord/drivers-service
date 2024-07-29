@@ -1,10 +1,10 @@
 repos:
   - repo: https://github.com/comecord/husky
-    rev: v1.0.3
+    rev: v1.0.4
     hooks:
       - id: increment-patch-version
         name: Increment Patch Version
-        entry: go run github.com/comecord/husky@v1.0.3 patch
+        entry: go run github.com/comecord/husky@v1.0.4 patch
         language: golang
         pass_filenames: false
         always_run: true
