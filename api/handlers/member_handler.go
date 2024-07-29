@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 	"net/http"
+	"strconv"
 )
 
 type MemberController struct {
@@ -83,6 +84,67 @@ func (mc *MemberController) Login(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, components.GenerateBaseResponse(token, true, components.Success))
 }
 
+// FindAll Member godoc
+//
+//	@Summary		Get all members
+//	@Description	Get all members
+//	@Tags			Members
+//	@Accept			json
+//	@produces		json
+//	@Param			page	query		string						false	"Page"
+//	@Param			limit	query		string						false	"Limit"
+//	@Success		200		{object}	components.BaseHttpResponse	"Success"
+//	@Failure		400		{object}	components.BaseHttpResponse	"Failed"
+//	@Failure		409		{object}	components.BaseHttpResponse	"Failed"
+//	@Router			/api/v1/members/list [get]
+//	@Security		BearerAuth
+func (mc *MemberController) FindAll(ctx *gin.Context) {
+	var page = ctx.DefaultQuery("page", "1")
+	var limit = ctx.DefaultQuery("limit", "10")
+
+	intPage, err := strconv.Atoi(page)
+	if err != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"status": "fail", "message": err.Error()})
+		return
+	}
+
+	intLimit, err := strconv.Atoi(limit)
+	if err != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"status": "fail", "message": err.Error()})
+		return
+	}
+
+	res, err := mc.service.FindAll(intPage, intLimit)
+	if err != nil {
+		ctx.AbortWithStatusJSON(components.TranslateErrorToStatusCode(err), components.GenerateBaseResponseWithError(nil, false, components.ValidationError, err))
+		return
+	}
+	ctx.JSON(http.StatusOK, components.GenerateBaseResponse(res, true, components.Success))
+}
+
+// GetMemberById Member godoc
+//
+//	@Summary		Get a member
+//	@Description	Get a member
+//	@Tags			Members
+//	@Accept			json
+//	@produces		json
+//	@Param			id	path		string						true	"Id of the member"
+//	@Success		200	{object}	components.BaseHttpResponse	"Success"
+//	@Failure		400	{object}	components.BaseHttpResponse	"Failed"
+//	@Failure		409	{object}	components.BaseHttpResponse	"Failed"
+//	@Router			/api/v1/members/{id} [get]
+//	@Security		BearerAuth
+func (mc *MemberController) GetMemberById(ctx *gin.Context) {
+	memberId := ctx.Param("id")
+	res, err := mc.service.GetMemberById(memberId)
+	if err != nil {
+		ctx.AbortWithStatusJSON(components.TranslateErrorToStatusCode(err), components.GenerateBaseResponseWithError(nil, false, components.ValidationError, err))
+		return
+	}
+	ctx.JSON(http.StatusOK, components.GenerateBaseResponse(res, true, components.Success))
+}
+
 // Update Member godoc
 //
 //	@Summary		Update a member
@@ -105,7 +167,7 @@ func (mc *MemberController) Update(ctx *gin.Context) {
 		return
 	}
 
-	res, err := mc.service.Update(member, ctx)
+	res, err := mc.service.Update(ctx, member)
 	if err != nil {
 		ctx.AbortWithStatusJSON(components.TranslateErrorToStatusCode(err), components.GenerateBaseResponseWithError(nil, false, components.ValidationError, err))
 		return

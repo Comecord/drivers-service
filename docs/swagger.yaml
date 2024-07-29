@@ -195,6 +195,67 @@ paths:
       summary: Health Check
       tags:
       - Health Check
+  /api/v1/members/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a member
+      parameters:
+      - description: Id of the member
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/components.BaseHttpResponse'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/components.BaseHttpResponse'
+        "409":
+          description: Failed
+          schema:
+            $ref: '#/definitions/components.BaseHttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Get a member
+      tags:
+      - Members
+  /api/v1/members/list:
+    get:
+      consumes:
+      - application/json
+      description: Get all members
+      parameters:
+      - description: Page
+        in: query
+        name: page
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/components.BaseHttpResponse'
+        "400":
+          description: Failed
+          schema:
+            $ref: '#/definitions/components.BaseHttpResponse'
+        "409":
+          description: Failed
+          schema:
+            $ref: '#/definitions/components.BaseHttpResponse'
+      security:
+      - BearerAuth: []
+      summary: Get all members
+      tags:
+      - Members
   /api/v1/members/login:
     post:
       consumes:

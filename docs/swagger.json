@@ -37,6 +37,57 @@
                 }
             }
         },
+        "/api/v1/members/list": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get all members",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Members"
+                ],
+                "summary": "Get all members",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/components.BaseHttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/components.BaseHttpResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/components.BaseHttpResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/members/login": {
             "post": {
                 "description": "Login a member",
@@ -240,6 +291,52 @@
                 ],
                 "responses": {
                     "201": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/components.BaseHttpResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/components.BaseHttpResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Failed",
+                        "schema": {
+                            "$ref": "#/definitions/components.BaseHttpResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/members/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get a member",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Members"
+                ],
+                "summary": "Get a member",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Id of the member",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
                         "description": "Success",
                         "schema": {
                             "$ref": "#/definitions/components.BaseHttpResponse"

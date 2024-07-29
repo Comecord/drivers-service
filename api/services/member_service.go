@@ -179,6 +179,77 @@ func (m *MemberService) Login(req *dto.MemberAuth) (*dto.TokenDetail, error) {
 
 }
 
+// FindAll возвращает отфильтрованный список объектов MemberResponse из сервиса MemberService.
+//
+// Параметры:
+//
+// - page: номер страницы результатов для извлечения (по умолчанию: 1)
+//
+// - limit: максимальное количество результатов на странице (по умолчанию: 10)
+//
+// Возвращает:
+//
+// - []*dto.MemberResponse: срез объектов MemberResponse, представляющих извлеченных членов
+//
+// - error: ошибка, если операция извлечения не удалась
+func (ms *MemberService) FindAll(page int, limit int) ([]*dto.MemberResponse, error) {
+
+	if page == 0 {
+		page = 1
+	}
+
+	if limit == 0 {
+		limit = 10
+	}
+
+	skip := (page - 1) * limit
+
+	opt := options.FindOptions{}
+	opt.SetLimit(int64(limit))
+	opt.SetSkip(int64(skip))
+	opt.SetSort(bson.M{"created_at": -1})
+
+	query := bson.M{}
+
+	cursor, err := ms.Collection.Find(ms.ctx, query, &opt)
+	if err != nil {
+		return nil, err
+	}
+
+	defer cursor.Close(ms.ctx)
+
+	var members []*dto.MemberResponse
+
+	for cursor.Next(ms.ctx) {
+		var member dto.MemberResponse
+		err := cursor.Decode(&member)
+		if err != nil {
+			return nil, err
+		}
+		members = append(members, &member)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+	return members, err
+}
+
+// GetMemberById возвращает информацию о члене по его идентификатору.
+//
+// id - идентификатор члена.
+// Возвращает объект dto.MemberResponse с информацией о члене или ошибку, если не удалось найти члена.
+func (m *MemberService) GetMemberById(id string) (*dto.MemberResponse, error) {
+	var memberRes *dto.MemberResponse
+	query := bson.M{"_id": id}
+	err := m.Collection.FindOne(m.ctx, query).Decode(&memberRes)
+	if err != nil {
+		return nil, err
+	}
+	return memberRes, nil
+
+}
+
 // Update updates a member's information in the database.
 //
 // Parameters:
@@ -188,7 +259,7 @@ func (m *MemberService) Login(req *dto.MemberAuth) (*dto.TokenDetail, error) {
 // Returns:
 // - memberRes: A pointer to a MemberResponse DTO containing the updated member information.
 // - error: An error if the update operation fails.
-func (m *MemberService) Update(res *dto.MemberUpdate, ctx *gin.Context) (*dto.MemberResponse, error) {
+func (m *MemberService) Update(ctx *gin.Context, res *dto.MemberUpdate) (*dto.MemberResponse, error) {
 
 	member, err := m.getEmailUser(ctx)
 	if err != nil {
