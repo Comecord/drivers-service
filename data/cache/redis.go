@@ -43,8 +43,7 @@ func CloseRedis() {
 	redisClient.Close()
 }
 
-func Set[T any](ctx context.Context, c *redis.Client, key string, value T, duration time.Duration) error {
-
+func Set(ctx context.Context, c *redis.Client, key string, value interface{}, duration time.Duration) error {
 	v, err := json.Marshal(value)
 	if err != nil {
 		return err
@@ -52,20 +51,20 @@ func Set[T any](ctx context.Context, c *redis.Client, key string, value T, durat
 	return c.Set(ctx, key, v, duration).Err()
 }
 
-func Get[T any](ctx context.Context, c *redis.Client, key string) (T, error) {
-	var dest T = *new(T)
+func Get(ctx context.Context, c *redis.Client, key string) (interface{}, error) {
 	v, err := c.Get(ctx, key).Result()
 	if err != nil {
-		return dest, err
+		return nil, err
 	}
+	var dest interface{}
 	err = json.Unmarshal([]byte(v), &dest)
 	if err != nil {
-		return dest, err
+		return nil, err
 	}
 	return dest, nil
 }
 
-func HSet[T any](ctx context.Context, c *redis.Client, hashKey string, field string, value T) error {
+func HSet(ctx context.Context, c *redis.Client, hashKey string, field string, value interface{}) error {
 	v, err := json.Marshal(value)
 	if err != nil {
 		return err
@@ -73,20 +72,20 @@ func HSet[T any](ctx context.Context, c *redis.Client, hashKey string, field str
 	return c.HSet(ctx, hashKey, field, v).Err()
 }
 
-func HGet[T any](ctx context.Context, c *redis.Client, hashKey string, field string) (T, error) {
-	var dest T = *new(T)
+func HGet(ctx context.Context, c *redis.Client, hashKey string, field string) (interface{}, error) {
 	v, err := c.HGet(ctx, hashKey, field).Result()
 	if err != nil {
-		return dest, err
+		return nil, err
 	}
+	var dest interface{}
 	err = json.Unmarshal([]byte(v), &dest)
 	if err != nil {
-		return dest, err
+		return nil, err
 	}
 	return dest, nil
 }
 
-func ZAdd[T any](ctx context.Context, c *redis.Client, zsetKey string, score float64, value T) error {
+func ZAdd(ctx context.Context, c *redis.Client, zsetKey string, score float64, value interface{}) error {
 	v, err := json.Marshal(value)
 	if err != nil {
 		return err
@@ -97,15 +96,15 @@ func ZAdd[T any](ctx context.Context, c *redis.Client, zsetKey string, score flo
 	}).Err()
 }
 
-func ZRange[T any](ctx context.Context, c *redis.Client, zsetKey string, start, stop int64) ([]T, error) {
+func ZRange(ctx context.Context, c *redis.Client, zsetKey string, start, stop int64) ([]interface{}, error) {
 	vals, err := c.ZRange(ctx, zsetKey, start, stop).Result()
 	if err != nil {
 		return nil, err
 	}
 
-	var result []T
+	var result []interface{}
 	for _, v := range vals {
-		var dest T
+		var dest interface{}
 		err = json.Unmarshal([]byte(v), &dest)
 		if err != nil {
 			return nil, err
