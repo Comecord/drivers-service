@@ -75,6 +75,8 @@ pre-commit install
 
 # CHANGELOG
 
+How to configure and install CHANGELOG written in [GIT-CNGLOG](https://github.com/git-chglog/git-chglog)
+
 ```shell
 go install github.com/git-chglog/git-chglog/cmd/git-chglog@latest
 
