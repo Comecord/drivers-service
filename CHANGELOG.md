@@ -11,10 +11,6 @@
 
 - **changelog:**  Добавлен changelog 
 
-- **changelog:**  Добавлен changelog 
-
-- **changelog:**  Добавлен changelog 
-
 - **config:**  новый пакет github.com/nikoksr/notify 
 
 - **config:**  Оповещение телеграм 

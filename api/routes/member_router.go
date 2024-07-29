@@ -18,4 +18,7 @@ func Members(r *gin.RouterGroup, db *mongo.Database) {
 	r.POST("/register", h.Register)
 	r.POST("/login", h.Login)
 	r.PATCH("/updates", middlewares.Authentication(cfg), middlewares.Authorization([]string{"member", "admin"}), h.Update)
+	r.GET("/:id", middlewares.Authentication(cfg), middlewares.Authorization([]string{"member", "admin"}), h.GetMemberById)
+	r.GET("/list", middlewares.Authentication(cfg), middlewares.Authorization([]string{"member", "admin"}), h.FindAll)
+
 }
