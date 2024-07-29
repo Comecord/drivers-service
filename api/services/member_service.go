@@ -33,6 +33,16 @@ type MemberService struct {
 	mailService  *EmailService
 }
 
+// NewMemberService creates a new instance of the MemberService struct.
+//
+// Parameters:
+// - db: a pointer to a mongo.Database object representing the MongoDB database connection.
+// - cfg: a pointer to a config.Config object representing the application configuration.
+// - ctx: a context.Context object representing the context of the function call.
+// - collectionName: a string representing the name of the MongoDB collection.
+//
+// Returns:
+// - a pointer to a MemberService struct.
 func NewMemberService(db *mongo.Database, cfg *config.Config, ctx context.Context, collectionName string) *MemberService {
 	return &MemberService{
 		Mongo:        db,
@@ -46,6 +56,10 @@ func NewMemberService(db *mongo.Database, cfg *config.Config, ctx context.Contex
 	}
 }
 
+// Register registers a new member in the system.
+//
+// The function takes a pointer to a MemberRegistration struct as input, which contains the details of the member to be registered.
+// It returns an error if there was any issue during the registration process.
 func (m *MemberService) Register(memberCreate *dto.MemberRegistration) error {
 
 	memberCreate.ID = tools.GenerateUUID()
@@ -113,6 +127,14 @@ func (m *MemberService) Register(memberCreate *dto.MemberRegistration) error {
 	return err
 }
 
+// Login authenticates a member using their email and password, and returns a token if successful.
+//
+// Parameters:
+// - req: A pointer to a MemberAuth DTO containing the email and password of the member.
+//
+// Returns:
+// - tokenDetail: A pointer to a TokenDetail DTO containing the token, mobile number, and email of the member.
+// - error: An error if the authentication fails.
 func (m *MemberService) Login(req *dto.MemberAuth) (*dto.TokenDetail, error) {
 
 	exists, err := m.ExistEmail(req.Email)
@@ -157,6 +179,15 @@ func (m *MemberService) Login(req *dto.MemberAuth) (*dto.TokenDetail, error) {
 
 }
 
+// Update updates a member's information in the database.
+//
+// Parameters:
+// - res: A pointer to a MemberUpdate DTO containing the updated member information.
+// - ctx: A pointer to a gin.Context object for handling the HTTP request.
+//
+// Returns:
+// - memberRes: A pointer to a MemberResponse DTO containing the updated member information.
+// - error: An error if the update operation fails.
 func (m *MemberService) Update(res *dto.MemberUpdate, ctx *gin.Context) (*dto.MemberResponse, error) {
 
 	member, err := m.getEmailUser(ctx)
@@ -184,6 +215,14 @@ func (m *MemberService) Update(res *dto.MemberUpdate, ctx *gin.Context) (*dto.Me
 
 }
 
+// updateDataValidation validates and prepares the update data for a member.
+//
+// Parameters:
+// - updateData: A pointer to a MemberUpdate DTO containing the updated member information.
+//
+// Returns:
+// - update: A bson.M object containing the update data.
+// - error: An error if the update data is invalid or empty.
 func (m *MemberService) updateDataValidation(updateData *dto.MemberUpdate) (bson.M, error) {
 	update := bson.M{}
 
@@ -232,6 +271,14 @@ func (m *MemberService) updateDataValidation(updateData *dto.MemberUpdate) (bson
 	return update, nil
 }
 
+// getEmailUser retrieves a Member from the database based on the email contained in the Authorization header of the given gin.Context.
+//
+// Parameters:
+// - ctx: A pointer to a gin.Context object representing the HTTP request and response.
+//
+// Returns:
+// - models.Member: The Member object retrieved from the database.
+// - error: An error if the retrieval fails or if the Authorization header is missing or invalid.
 func (m *MemberService) getEmailUser(ctx *gin.Context) (models.Member, error) {
 	claimMap := map[string]interface{}{}
 	auth := ctx.GetHeader(constants.AuthorizationHeaderKey)
@@ -264,6 +311,14 @@ func (m *MemberService) getEmailUser(ctx *gin.Context) (models.Member, error) {
 
 }
 
+// ExistEmail checks if an email exists in the database.
+//
+// Parameters:
+// - email: The email to check.
+//
+// Returns:
+// - bool: True if the email exists, false otherwise.
+// - error: An error if there was an issue checking the email.
 func (m *MemberService) ExistEmail(email string) (bool, error) {
 	query := bson.M{"email": email}
 	var member *models.Member
@@ -277,6 +332,15 @@ func (m *MemberService) ExistEmail(email string) (bool, error) {
 	return true, nil
 }
 
+// chooseRole finds and returns a MemberRole from the given member's list of roles based on the provided role name.
+//
+// Parameters:
+// - member: A pointer to a Member struct representing the member whose roles are being searched.
+// - roleName: A string representing the name of the role to search for.
+//
+// Returns:
+// - MemberRole: The MemberRole struct that matches the provided role name, or an empty MemberRole struct and an error if no match is found.
+// - error: An error if the provided role name is not found in the member's roles.
 func chooseRole(member *models.Member, roleName string) (models.MemberRole, error) {
 	for _, role := range member.Role {
 		if role.Name == roleName {
@@ -286,6 +350,16 @@ func chooseRole(member *models.Member, roleName string) (models.MemberRole, erro
 	return models.MemberRole{}, fmt.Errorf("role '%s' not found for member", roleName)
 }
 
+// findRoleByName retrieves a MemberRole from the given collection based on the provided name.
+//
+// Parameters:
+// - ctx: The context.Context to control the execution of the function.
+// - collection: The *mongo.Collection to search for the MemberRole.
+// - name: The name of the MemberRole to search for.
+//
+// Returns:
+// - *models.MemberRole: The retrieved MemberRole, or nil if not found.
+// - error: An error if there was a problem retrieving the MemberRole.
 func findRoleByName(ctx context.Context, collection *mongo.Collection, name string) (*models.MemberRole, error) {
 	var role *models.MemberRole
 	query := bson.M{"name": name}
