@@ -70,7 +70,7 @@ func Login() *AuthPost {
 	}
 	logger.Debugf("Auth: %s, UserId: %s, Username: %s", authPostData.AuthId, authPostData.UserId, authPostData.User)
 
-	cache.Set(ctx, rdb, authPostData.UserId, authPostData.AuthId, 10*time.Minute)
+	cache.Set(ctx, rdb, "auth", authPostData.AuthId, 10*time.Minute)
 
 	return authPostData
 }
@@ -106,4 +106,12 @@ func GetVehicleList(authData *AuthPost) any {
 		panic(err)
 	}
 	return dataResponse
+}
+
+func authInterceptor() string {
+	authKey, _ := cache.Get(ctx, rdb, "auth")
+	if authKey == nil {
+		Login()
+	}
+	return ""
 }
