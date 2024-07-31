@@ -80,6 +80,10 @@ type Config struct {
 		AccessTokenExpireDuration  time.Duration `yaml:"accessTokenExpireDuration"`
 		RefreshTokenExpireDuration time.Duration `yaml:"refreshTokenExpireDuration"`
 	}
+	Glonass struct {
+		AuthLogin    string `yaml:"authLogin"`
+		AuthPassword string `yaml:"authPassword"`
+	}
 	Version string
 }
 

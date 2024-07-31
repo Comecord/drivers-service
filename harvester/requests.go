@@ -20,25 +20,34 @@ type AuthPost struct {
 	Notifications bool   `json:"Notifications"`
 }
 
-var conf = config.GetConfig()
-var ctx = context.Background()
+var (
+	conf  = config.GetConfig()
+	ctx   = context.Background()
+	gl, _ = config.LoadGlonassApi()
 
-var logger = logging.NewLogger(config.GetConfig())
-var authPostData = &AuthPost{}
+	logger       = logging.NewLogger(config.GetConfig())
+	authPostData = &AuthPost{}
 
-var rdbInit = cache.InitRedis(conf, ctx)
-var rdb = cache.GetRedis()
+	rdbInit = cache.InitRedis(conf, ctx)
+	rdb     = cache.GetRedis()
+)
 
 // TODO: Заменить все URL из переменных запросов к Glonass на RequestApiUrl с чтением кофиг json
+// TODO: Отлавливать ошибки вместо выдачи паники при запросах
 
 // Login Получение данных логина из Glonass и запись в redis на 10 минут
 func Login() *AuthPost {
-	posturl := "https://hosting.glonasssoft.ru/api/v3/auth/login"
+	params := &config.ApiParams{
+		PathParams:  []string{"login"},
+		QueryParams: nil,
+	}
 
-	body := []byte(`{
-		"login": "demo",
-  		"password": "$$demo$$"
-	}`)
+	posturl := config.RequestApiUrl(gl.V3.Auth.Uri, params)
+
+	body := []byte(fmt.Sprintf(`{
+		"login": "%s",
+  		"password": "%s"
+	}`, conf.Glonass.AuthLogin, conf.Glonass.AuthPassword))
 
 	r, err := http.NewRequest("POST", posturl, bytes.NewBuffer(body))
 	if err != nil {
@@ -81,8 +90,10 @@ func Login() *AuthPost {
 
 // GetVehicleList TODO: Починить запрос к кэшу и логину
 func GetVehicleList() any {
+	posturl := config.RequestApiUrl(gl.Monitor.Vehicle.Uri, nil)
+
 	authData := authInterceptor()
-	posturl := "https://hosting.glonasssoft.ru/api/monitoringVehicles"
+
 	r, err := http.NewRequest("GET", posturl, nil)
 	if err != nil {
 		panic(err)
@@ -98,6 +109,7 @@ func GetVehicleList() any {
 		panic(err)
 	}
 	defer res.Body.Close()
+
 	bodyBytes, err := io.ReadAll(res.Body)
 	if err != nil {
 		panic(err)
@@ -115,7 +127,6 @@ func GetVehicleList() any {
 
 func authInterceptor() interface{} {
 	authKey, err := cache.Get(ctx, rdb, "auth")
-	fmt.Println(authKey)
 	if authKey == nil {
 		Login()
 	}

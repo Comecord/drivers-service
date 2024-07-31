@@ -10,6 +10,9 @@
     "v3": {
       "agents": {
         "uri": "/api/v3/agents"
+      },
+      "auth": {
+        "uri": "/api/v3/auth"
       }
     }
 }

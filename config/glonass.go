@@ -21,6 +21,9 @@ type GlonassApi struct {
 		Agents struct {
 			Uri string `mapstructure:"uri"`
 		} `mapstructure:"agents"`
+		Auth struct {
+			Uri string `mapstructure:"uri"`
+		} `mapstructure:"auth"`
 	} `mapstructure:"v3"`
 }
 
