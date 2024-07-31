@@ -59,3 +59,8 @@ jwt:
   refreshSecret: "mySecretKey"
   accessTokenExpireDuration: 60
   refreshTokenExpireDuration: 3600
+glonass:
+  domain: "hosting.glonasssoft.ru"
+  url: "https://hosting.glonasssoft.ru"
+  authLogin: "demo"
+  authPassword: "$$demo$$"

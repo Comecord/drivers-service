@@ -29,6 +29,8 @@ var authPostData = &AuthPost{}
 var rdbInit = cache.InitRedis(conf, ctx)
 var rdb = cache.GetRedis()
 
+// TODO: Заменить все URL из переменных запросов к Glonass на RequestApiUrl с чтением кофиг json
+
 // Login Получение данных логина из Glonass и запись в redis на 10 минут
 func Login() *AuthPost {
 	posturl := "https://hosting.glonasssoft.ru/api/v3/auth/login"
@@ -70,13 +72,16 @@ func Login() *AuthPost {
 	}
 	logger.Debugf("Auth: %s, UserId: %s, Username: %s", authPostData.AuthId, authPostData.UserId, authPostData.User)
 
-	cache.Set(ctx, rdb, "auth", authPostData.AuthId, 10*time.Minute)
-
+	err = cache.Set(ctx, rdb, "auth", authPostData.AuthId, 10*time.Minute)
+	if err != nil {
+		fmt.Println(err)
+	}
 	return authPostData
 }
 
-func GetVehicleList(authData *AuthPost) any {
-	fmt.Println(authPostData.AuthId, authPostData.UserId)
+// GetVehicleList TODO: Починить запрос к кэшу и логину
+func GetVehicleList() any {
+	authData := authInterceptor()
 	posturl := "https://hosting.glonasssoft.ru/api/monitoringVehicles"
 	r, err := http.NewRequest("GET", posturl, nil)
 	if err != nil {
@@ -84,7 +89,7 @@ func GetVehicleList(authData *AuthPost) any {
 	}
 
 	r.Header.Add("Content-Type", "application/json")
-	r.Header.Add("X-Auth", authData.AuthId)
+	r.Header.Add("X-Auth", authData.(string))
 	r.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36")
 
 	client := &http.Client{}
@@ -108,10 +113,15 @@ func GetVehicleList(authData *AuthPost) any {
 	return dataResponse
 }
 
-func authInterceptor() string {
-	authKey, _ := cache.Get(ctx, rdb, "auth")
+func authInterceptor() interface{} {
+	authKey, err := cache.Get(ctx, rdb, "auth")
+	fmt.Println(authKey)
 	if authKey == nil {
 		Login()
 	}
-	return ""
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	return authKey
 }

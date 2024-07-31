@@ -11,7 +11,7 @@ type Message struct {
 
 // Функция для обработки сообщений "vehicles"
 func VehicleListService(msg Message) map[string]string {
-	data := GetVehicleList(authPostData)
+	data := GetVehicleList()
 	fmt.Printf("VEHICLES: %v", data)
 	vehicleData := fmt.Sprintf("%v", data)
 	return map[string]string{"status": "success", "message": vehicleData, "userID": msg.UserID}

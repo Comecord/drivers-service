@@ -29,12 +29,25 @@ var upgrader = websocket.Upgrader{
 }
 
 func main() {
-	http.HandleFunc("/ws", handleConnections)
-
-	fmt.Println("Starting server on :8000")
-	if err := http.ListenAndServe(":8000", nil); err != nil {
-		fmt.Println("Failed to start server:", err)
+	gl, _ := config.LoadGlonassApi()
+	globalConfig := config.GetConfig()
+	queryParams := map[string]string{
+		"key": "value",
 	}
+	params2 := &config.ApiParams{
+		PathParams:  []string{"456"},
+		QueryParams: queryParams,
+	}
+	result2 := config.RequestApiUrl(gl.V3.Agents.Uri, params2)
+	fmt.Println(result2) // Вывод: https://api.example.com/endpoint/456/magazines?key=value
+	fmt.Printf("Glonass: %v \n", gl)
+	fmt.Printf("Global: %v \n", globalConfig)
+	//http.HandleFunc("/ws", handleConnections)
+	//
+	//fmt.Println("Starting server on :8000")
+	//if err := http.ListenAndServe(":8000", nil); err != nil {
+	//	fmt.Println("Failed to start server:", err)
+	//}
 }
 
 func handleConnections(w http.ResponseWriter, r *http.Request) {
