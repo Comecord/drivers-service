@@ -62,21 +62,21 @@ func RequestApiUrl(uri string, params *ApiParams) string {
 	// Формируем базовый URL
 	api := glonassApi.Url + uri
 
-	// Если есть параметры пути, заменяем их в URI
-	if params.PathParams != nil {
-		if len(params.PathParams) > 0 {
+	if params != nil {
+		// Если есть параметры пути, заменяем их в URI
+		if params.PathParams != nil && len(params.PathParams) > 0 {
 			path := strings.Join(params.PathParams, "/")
 			api = fmt.Sprintf("%s/%s", api, path)
 		}
-	}
 
-	// Формируем параметры запроса
-	if params.QueryParams != nil {
-		query := url.Values{}
-		for key, value := range params.QueryParams {
-			query.Add(key, value)
+		// Формируем параметры запроса
+		if params.QueryParams != nil {
+			query := url.Values{}
+			for key, value := range params.QueryParams {
+				query.Add(key, value)
+			}
+			api += "?" + query.Encode()
 		}
-		api += "?" + query.Encode()
 	}
 
 	return api

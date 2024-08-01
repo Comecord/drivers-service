@@ -70,7 +70,6 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 	// Определение маршрутов
 	routes := ServerRoutes{
 		"vehicles": harvester.VehicleListService,
-		"login":    harvester.LoginService,
 	}
 
 	for {

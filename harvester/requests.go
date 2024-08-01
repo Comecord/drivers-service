@@ -7,9 +7,12 @@ import (
 	"drivers-service/data/cache"
 	"drivers-service/pkg/logging"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/go-redis/redis/v8"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -88,11 +91,10 @@ func Login() *AuthPost {
 	return authPostData
 }
 
-// GetVehicleList TODO: Починить запрос к кэшу и логину
+// GetVehicleList Получение монитора транспорта
 func GetVehicleList() any {
 	posturl := config.RequestApiUrl(gl.Monitor.Vehicle.Uri, nil)
-
-	authData := authInterceptor()
+	authValue := authInterceptor()
 
 	r, err := http.NewRequest("GET", posturl, nil)
 	if err != nil {
@@ -100,7 +102,7 @@ func GetVehicleList() any {
 	}
 
 	r.Header.Add("Content-Type", "application/json")
-	r.Header.Add("X-Auth", authData.(string))
+	r.Header.Add("X-Auth", authValue)
 	r.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36")
 
 	client := &http.Client{}
@@ -125,14 +127,20 @@ func GetVehicleList() any {
 	return dataResponse
 }
 
-func authInterceptor() interface{} {
-	authKey, err := cache.Get(ctx, rdb, "auth")
-	if authKey == nil {
+func authInterceptor() string {
+	if rdb == nil {
+		fmt.Println("Ошибка: rdb не инициализирован.")
+		return ""
+	}
+
+	authKey, err := rdb.Get(ctx, "auth").Result()
+	if errors.Is(err, redis.Nil) {
 		Login()
+		authKey, _ = rdb.Get(ctx, "auth").Result()
 	}
 	if err != nil {
 		fmt.Println(err)
-		return nil
+		return ""
 	}
-	return authKey
+	return strings.Trim(authKey, "\"")
 }
