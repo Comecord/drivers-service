@@ -80,12 +80,15 @@ type Config struct {
 		AccessTokenExpireDuration  time.Duration `yaml:"accessTokenExpireDuration"`
 		RefreshTokenExpireDuration time.Duration `yaml:"refreshTokenExpireDuration"`
 	}
+	Glonass struct {
+		AuthLogin    string `yaml:"authLogin"`
+		AuthPassword string `yaml:"authPassword"`
+	}
 	Version string
 }
 
 func GetConfig() *Config {
 	cfgPath := getConfigPath(os.Getenv("APP_ENV"))
-	log.Printf("ENV: %v\n", os.Getenv("APP_ENV"))
 	b, err := LoadConfig(cfgPath, "yml")
 	if err != nil {
 		log.Fatalf("Error in load config %v", err)

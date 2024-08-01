@@ -1,0 +1,18 @@
+{
+  "domain": "hosting.glonasssoft.ru",
+  "url": "https://hosting.glonasssoft.ru",
+  "monitor": {
+      "vehicle": {
+        "uri": "/api/monitoringVehicles",
+        "descr": "Получение списка автомобилей и местоположения"
+      }
+    },
+    "v3": {
+      "agents": {
+        "uri": "/api/v3/agents"
+      },
+      "auth": {
+        "uri": "/api/v3/auth"
+      }
+    }
+}

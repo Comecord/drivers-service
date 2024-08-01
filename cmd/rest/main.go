@@ -7,16 +7,25 @@ import (
 	"drivers-service/data/cache"
 	mongox "drivers-service/data/mongox"
 	"drivers-service/data/seeds"
-	"os"
-
 	"drivers-service/pkg/logging"
+	"os"
+	"os/signal"
+	"sync"
+	"syscall"
 )
 
 var logger = logging.NewLogger(config.GetConfig())
+var conf = config.GetConfig()
+var ctx = context.TODO()
+
+func init() {
+	err := cache.InitRedis(conf, ctx)
+	if err != nil {
+		logger.Error(logging.Redis, logging.Connection, err.Error(), map[logging.ExtraKey]interface{}{"Version": conf.Version})
+	}
+}
 
 func main() {
-	conf := config.GetConfig()
-	ctx := context.TODO()
 
 	if _, err := os.Stat("uploads"); os.IsNotExist(err) {
 		err := os.Mkdir("uploads", os.ModePerm)
@@ -28,17 +37,37 @@ func main() {
 	// Logger info
 	logger.Info(logging.General, logging.StartUp, "Started server...", map[logging.ExtraKey]interface{}{"Version": conf.Version})
 
+	var wg sync.WaitGroup
+
+	// Websocket client connection
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		//client.ConnectSocket()
+		logger.Infof("Socket client connected")
+	}()
+
 	// Database connection
-	database, _ := mongox.Connection(conf, ctx, logger)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		database, _ := mongox.Connection(conf, ctx, logger)
+		seeds.SeedRoles(database, ctx)
+		//err := cache.InitRedis(conf, ctx)
+		//if err != nil {
+		//	logger.Error(logging.Redis, logging.Connection, err.Error(), map[logging.ExtraKey]interface{}{"Version": conf.Version})
+		//}
+		logger.Infof("Listening on Swagger http://localhost:%d/swagger/index.html", conf.Server.IPort)
+		api.InitialServer(conf, database, logger)
+	}()
 
-	seeds.SeedRoles(database, ctx)
+	// Handle graceful shutdown
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
 
-	err := cache.InitRedis(conf, ctx)
-	if err != nil {
-		logger.Error(logging.Redis, logging.Connection, err.Error(), map[logging.ExtraKey]interface{}{"Version": conf.Version})
-	}
-	logger.Infof("http://localhost:%d/swagger/index.html", conf.Server.IPort)
-	logger.Infof("ENV: %v\n", os.Getenv("APP_ENV"))
-	api.InitialServer(conf, database, logger)
+	logger.Infof("Shutting down server...")
 
+	// Wait for all goroutines to finish
+	wg.Wait()
 }
